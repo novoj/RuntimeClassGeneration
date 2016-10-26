@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- MySQL -->
+
+	<bean id="adapter" class="org.apache.commons.dbcp.cpdsadapter.DriverAdapterCPDS">
+		<property name="driver" value="${mysql.jdbc.driver}"/>
+		<property name="url" value="${mysql.jdbc.url}"/>
+		<property name="user" value="${mysql.jdbc.user}"/>
+		<property name="password" value="${mysql.jdbc.password}"/>
+	</bean>
+
+	<bean id="dataSourceImpl" class="org.apache.commons.dbcp.datasources.SharedPoolDataSource" destroy-method="close">
+		<property name="connectionPoolDataSource" ref="adapter"/>
+		<property name="maxActive" value="3"/>
+		<property name="maxIdle" value="3"/>
+		<property name="maxWait" value="1000"/>
+		<property name="defaultAutoCommit" value="true"/>
+		<property name="validationQuery" value="select now()"/>
+	</bean>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource">
+			<ref local="dataSourceImpl"/>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceImpl"/>
+	</bean>
+
+	<!-- test tables creation -->
+
+	<import resource="classpath:/META-INF/lib_db_autoupdate/spring/db-autoupdate-config.xml"/>
+
+	<bean id="testAutoUpdater" class="com.fg.autoupdate.AutoUpdater">
+		<property name="componentDescriptor">
+			<bean class="com.fg.autoupdate.AutoUpdaterInfo">
+				<property name="componentName" value="lib_metadata_perf_test"/>
+				<property name="componentVersion" value="2.1.0"/>
+			</bean>
+		</property>
+		<property name="resourceAccessor" ref="testAutoUpdateResourceAccessor"/>
+	</bean>
+
+	<bean id="testAutoUpdateResourceAccessor" class="com.fg.autoupdate.resources.DefaultResourceAccessor">
+		<property name="resourcePath" value="classpath:/META-INF/sql/"/>
+	</bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="metadataManager" class="com.fg.metadata.business.MetadataManagerFactory" lazy-init="true">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="metadataConfiguration" value="classpath:/META-INF/metadata/metadata.xml"/>
+    </bean>
+
+    <bean id="blogPostManager" class="com.fg.metadata.business.DaoGeneratorFactory" lazy-init="true">
+        <property name="metadataManager" ref="metadataManager"/>
+        <property name="generatedDao" value="com.fg.metadata.model.BlogPostManager"/>
+    </bean>
+
+</beans>
