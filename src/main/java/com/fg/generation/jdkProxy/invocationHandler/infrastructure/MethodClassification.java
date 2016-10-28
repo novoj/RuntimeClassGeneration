@@ -15,7 +15,14 @@ public class MethodClassification<T, S> {
     private final MethodInvocationHandler<T, S> invocationHandler;
 
     public boolean matches(Method method) {
-        return methodMatcher.matches(method);
+        try {
+            return methodMatcher.matches(method);
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                    "Matcher " + methodMatcher.getClass().getName() +
+                    " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
+            );
+        }
     }
 
     public ContextWiseMethodInvocationHandler<S> createContextInvocationHandler(Method method) {

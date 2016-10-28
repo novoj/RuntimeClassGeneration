@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy;
+package com.fg.generation.javassist;
 
 import com.fg.generation.jdkProxy.invocationHandler.infrastructure.DispatcherInvocationHandler;
 import com.fg.generation.jdkProxy.invocationHandler.infrastructure.MethodClassification;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public interface JdkProxyGenerator {
+public interface JavassistProxyGenerator {
 
 	static <T, S> T instantiate(Class<T> contract, List<MethodClassification> methodClassifications, S proxyState) {
 		return instantiate(contract, new DispatcherInvocationHandler<>(proxyState, methodClassifications));
@@ -20,9 +20,9 @@ public interface JdkProxyGenerator {
 
 	@SuppressWarnings("unchecked")
 	static <T> T instantiate(Class<T> contract, InvocationHandler invocationHandler) {
-		return (T) Proxy.newProxyInstance(
-				JdkProxyGenerator.class.getClassLoader(),
-				new Class[]{ contract, com.fg.generation.jdkProxy.invocationHandler.infrastructure.Proxy.class },
+		return (T)Proxy.newProxyInstance(
+				JavassistProxyGenerator.class.getClassLoader(),
+				new Class[]{contract},
 				invocationHandler
 		);
 	}

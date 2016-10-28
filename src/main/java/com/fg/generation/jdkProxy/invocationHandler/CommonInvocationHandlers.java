@@ -2,6 +2,7 @@ package com.fg.generation.jdkProxy.invocationHandler;
 
 import com.fg.generation.jdkProxy.invocationHandler.infrastructure.ContextWiseMethodInvocationHandler;
 import com.fg.generation.jdkProxy.invocationHandler.infrastructure.MethodClassification;
+import com.fg.generation.jdkProxy.invocationHandler.infrastructure.Proxy;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
@@ -35,8 +36,41 @@ public interface CommonInvocationHandlers {
         );
     }
 
-    static ContextWiseMethodInvocationHandler<Void> defaultMethodInvokerWithContext() {
-        return (proxy, method, args, proxyState) -> defaultMethodInvoker();
+    static MethodClassification<Void, Object> toStringMethodInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("toString")),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.toString()
+        );
+    }
+
+    static MethodClassification<Void, Object> hashCodeMethodInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("hashCode")),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.hashCode()
+        );
+    }
+
+    static MethodClassification<Void, Object> equalsMethodInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("equals", Object.class)),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) ->
+                                        proxy.getClass().equals(args[0].getClass()) &&
+                                        proxyState.equals(((Proxy)args[0]).getProxyState())
+        );
+    }
+
+    static MethodClassification<Void, Object> finalizeInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(Proxy.class.getDeclaredMethod("finalize")),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> null);
+    }
+
+    static ContextWiseMethodInvocationHandler<Void> missingImplementationInvokerWithContext() {
+        return (proxy, method, args, proxyState) -> missingImplementationInvoker();
     }
 
     static MethodClassification missingImplementationInvoker() {
@@ -49,10 +83,6 @@ public interface CommonInvocationHandlers {
                                 );
                             }
         );
-    }
-
-    static ContextWiseMethodInvocationHandler<Void> missingImplementationInvokerWithContext() {
-        return (proxy, method, args, proxyState) -> missingImplementationInvoker();
     }
 
 }
