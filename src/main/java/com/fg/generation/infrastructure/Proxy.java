@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy.invocationHandler.infrastructure;
+package com.fg.generation.infrastructure;
 
 /**
  * Created by Rodina Novotnych on 28.10.2016.
@@ -6,8 +6,6 @@ package com.fg.generation.jdkProxy.invocationHandler.infrastructure;
 public interface Proxy {
 
     Object getProxyState();
-
-    void finalize();
 
     static MethodClassification<Void, Object> getProxyStateMethodInvoker() {
         return new MethodClassification<>(

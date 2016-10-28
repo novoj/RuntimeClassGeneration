@@ -1,6 +1,6 @@
 package com.fg.generation.jdkProxy;
 
-import com.fg.generation.jdkProxy.invocationHandler.GenericBucketProxyGenerator;
+import com.fg.generation.contract.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import org.junit.Test;
 
@@ -14,11 +14,11 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JdkProxyGeneratorTest {
+public class JdkInterfaceProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
-		CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
+		CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
 		assertNotNull(person);
 	}
 
@@ -51,7 +51,7 @@ public class JdkProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_PropertiesCanBeSetIntoMap() throws Exception {
-		final CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
 		final Map<String, Object> props = person.getProperties();
 		props.put("firstName", "Jan");
 		props.put("lastName", "Novotný");
@@ -90,7 +90,7 @@ public class JdkProxyGeneratorTest {
     }
 
     private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
-        final CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
+        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setBirthDate(LocalDate.of(1978, 5, 5));
