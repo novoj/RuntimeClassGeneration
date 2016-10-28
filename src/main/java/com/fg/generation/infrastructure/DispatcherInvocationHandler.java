@@ -6,8 +6,8 @@ import lombok.extern.apachecommons.CommonsLog;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,14 +22,15 @@ public class DispatcherInvocationHandler<T> implements InvocationHandler, Method
     /* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, ContextWiseMethodInvocationHandler> classificationCache = new ConcurrentHashMap<>(32);
 
-    public DispatcherInvocationHandler(T proxyState, List<MethodClassification> methodClassifications) {
+    public DispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
         this.proxyState = proxyState;
-        this.methodClassifications = new LinkedList<>(methodClassifications);
-        this.methodClassifications.addFirst(StandardJavaMethods.hashCodeMethodInvoker());
-        this.methodClassifications.addFirst(StandardJavaMethods.equalsMethodInvoker());
-        this.methodClassifications.addFirst(StandardJavaMethods.toStringMethodInvoker());
-        this.methodClassifications.addFirst(StandardJavaMethods.defaultMethodInvoker());
-        this.methodClassifications.addFirst(Proxy.getProxyStateMethodInvoker());
+        this.methodClassifications = new LinkedList<>();
+        this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
+        this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
+        this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
+        this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
+        this.methodClassifications.add(Proxy.getProxyStateMethodInvoker());
+        Collections.addAll(this.methodClassifications, methodClassifications);
     }
 
     @Override

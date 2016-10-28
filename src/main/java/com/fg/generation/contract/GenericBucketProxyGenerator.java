@@ -1,10 +1,10 @@
 package com.fg.generation.contract;
 
+import com.fg.generation.infrastructure.DispatcherInvocationHandler;
 import com.fg.generation.infrastructure.MethodClassification;
 import com.fg.generation.javassist.JavassistProxyGenerator;
 import com.fg.generation.jdkProxy.JdkProxyGenerator;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,24 +45,25 @@ public interface GenericBucketProxyGenerator {
 
     static <T> T instantiateJdkProxy(Class<T> contract) {
         return JdkProxyGenerator.instantiate(
-                contract,
-                Arrays.asList(
-                        getPropertiesInvoker(),
-                        getterInvoker(),
-                        setterInvoker()
+                new DispatcherInvocationHandler<Map<String, Object>>(
+                    new HashMap<>(64),
+                    getPropertiesInvoker(),
+                    getterInvoker(),
+                    setterInvoker()
                 ),
-                new HashMap<String, Object>(64));
+                contract
+        );
     }
 
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
-                contract,
-                Arrays.asList(
+                new DispatcherInvocationHandler<Map<String, Object>>(
+                        new HashMap<>(64),
                         getPropertiesInvoker(),
                         getterInvoker(),
                         setterInvoker()
                 ),
-                new HashMap<String, Object>(64));
+                contract);
     }
 
 }

@@ -1,6 +1,6 @@
 package com.fg.generation.benchmark;
 
-import com.fg.generation.jdkProxy.JdkNoOpProxyGenerator;
+import com.fg.generation.contract.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -10,7 +10,7 @@ import org.openjdk.jmh.infra.Blackhole;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JdkNoOpProxyBenchmark {
+public class JavassistGenericBucketProxyBenchmark {
 
 	@State(Scope.Thread)
 	public static class BenchmarkState {
@@ -18,14 +18,14 @@ public class JdkNoOpProxyBenchmark {
 
 		@Setup(Level.Trial)
 		public void doSetup() {
-			cus = JdkNoOpProxyGenerator.instantiate(CustomizedPerson.class);
+			cus = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
 		}
 
 	}
 
 	@Benchmark
 	public void instantiate(Blackhole blackhole) {
-		final CustomizedPerson cus = JdkNoOpProxyGenerator.instantiate(CustomizedPerson.class);
+		final CustomizedPerson cus = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
 		blackhole.consume(cus);
 	}
 
