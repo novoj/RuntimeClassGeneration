@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy.invocationHandler;
+package com.fg.generation.jdkProxy.invocationHandler.reference;
 
 import lombok.RequiredArgsConstructor;
 

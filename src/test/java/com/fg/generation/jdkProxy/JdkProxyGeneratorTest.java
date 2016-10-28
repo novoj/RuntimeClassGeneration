@@ -1,6 +1,6 @@
 package com.fg.generation.jdkProxy;
 
-import com.fg.generation.jdkProxy.invocationHandler.GenericBucketInvocationHandler;
+import com.fg.generation.jdkProxy.invocationHandler.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class JdkProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_CustomizedPerson_ProxyCreated() throws Exception {
-		final CustomizedPerson person = JdkProxyGenerator.instantiate(CustomizedPerson.class, new GenericBucketInvocationHandler());
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
 		person.setFirstName("Jan");
 		person.setLastName("Novotný");
 		person.setBirthDate(LocalDate.of(1978, 5, 5));
