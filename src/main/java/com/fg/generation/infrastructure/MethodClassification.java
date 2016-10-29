@@ -25,9 +25,9 @@ public class MethodClassification<T, S> {
         }
     }
 
-    public ContextWiseMethodInvocationHandler<S> createContextInvocationHandler(Method method) {
-        return (proxy, method1, args, proxyState) -> invocationHandler.invoke(
-                proxy, method, args, methodClassificationContext.apply(method), proxyState
+    public ContextWiseMethodInvocationHandler<S> createContextInvocationHandler(Method classificationMethod) {
+        return (proxy, executionMethod, args, proxyState) -> invocationHandler.invoke(
+                proxy, executionMethod, args, methodClassificationContext.apply(classificationMethod), proxyState
         );
     }
 

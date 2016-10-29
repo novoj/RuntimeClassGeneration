@@ -25,6 +25,7 @@ public class DispatcherInvocationHandler<T> implements InvocationHandler, Method
     public DispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
         this.proxyState = proxyState;
         this.methodClassifications = new LinkedList<>();
+        this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
@@ -52,16 +53,19 @@ public class DispatcherInvocationHandler<T> implements InvocationHandler, Method
                         this::getContextWiseMethodInvocationHandler
                 );
 
-        return invocationHandler.invoke(self, thisMethod, args, proxyState);
+        return invocationHandler.invoke(self, proceed == null ? thisMethod : proceed, args, proxyState);
     }
 
     private ContextWiseMethodInvocationHandler getContextWiseMethodInvocationHandler(Method method) {
         log.info("Creating proxy method handler for " + method.toGenericString());
         return methodClassifications.stream()
+                //find proper method classification (invoker handler) for passed method
                 .filter(methodClassification -> methodClassification.matches(method))
+                //crete contextwise invocation handler (invocation handler curried with method state)
                 .map(methodClassification -> methodClassification.createContextInvocationHandler(method))
                 .findFirst()
-                .orElse(StandardJavaMethods.missingImplementationInvokerWithContext());
+                //return missing invocation handler throwing exception
+                .orElse(StandardJavaMethods.missingImplementationInvoker());
     }
 
 }

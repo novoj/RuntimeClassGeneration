@@ -7,6 +7,7 @@ import com.fg.generation.infrastructure.Proxy;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 /**
@@ -36,6 +37,14 @@ public interface StandardJavaMethods {
         );
     }
 
+    static MethodClassification realMethodInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> !Modifier.isAbstract(method.getModifiers()),
+        /* methodContext */ NO_CONTEXT,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> method.invoke(proxy, args)
+        );
+    }
+
     static MethodClassification<Void, Object> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("toString")),
@@ -62,20 +71,12 @@ public interface StandardJavaMethods {
         );
     }
 
-    static ContextWiseMethodInvocationHandler<Void> missingImplementationInvokerWithContext() {
-        return (proxy, method, args, proxyState) -> missingImplementationInvoker();
-    }
-
-    static MethodClassification missingImplementationInvoker() {
-        return new MethodClassification<>(
-        /* matcher */       method -> true,
-        /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
-                                throw new UnsupportedOperationException(
-                                        "Method " + method.toGenericString() + " is not supported by this proxy!"
-                                );
-                            }
-        );
+    static ContextWiseMethodInvocationHandler missingImplementationInvoker() {
+        return (proxy, method, args, proxyState) -> {
+            throw new UnsupportedOperationException(
+                    "Method " + method.toGenericString() + " is not supported by this proxy!"
+            );
+        };
     }
 
 }

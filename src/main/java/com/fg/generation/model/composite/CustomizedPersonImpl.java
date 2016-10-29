@@ -26,4 +26,8 @@ public class CustomizedPersonImpl implements CustomizedPerson {
 		return props;
 	}
 
+	@Override
+	public void doWork() {
+		// do nothing :)
+	}
 }

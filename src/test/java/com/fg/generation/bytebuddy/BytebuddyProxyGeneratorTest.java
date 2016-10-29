@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy;
+package com.fg.generation.bytebuddy;
 
 import com.fg.generation.contract.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
@@ -14,11 +14,11 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JdkInterfaceProxyGeneratorTest {
+public class BytebuddyProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
-		CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
+		CustomizedPerson person = GenericBucketProxyGenerator.instantiateByteBuddyProxy(CustomizedPerson.class);
 		assertNotNull(person);
 	}
 
@@ -89,14 +89,8 @@ public class JdkInterfaceProxyGeneratorTest {
         assertNotEquals(person, differentPerson);
     }
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void JdkProxyGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
-		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
-		person.doWork();
-	}
-
     private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
-        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
+        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateByteBuddyProxy(CustomizedPerson.class);
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setBirthDate(LocalDate.of(1978, 5, 5));

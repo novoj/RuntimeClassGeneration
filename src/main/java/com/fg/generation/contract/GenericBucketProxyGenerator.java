@@ -1,5 +1,6 @@
 package com.fg.generation.contract;
 
+import com.fg.generation.bytebuddy.BytebuddyProxyGenerator;
 import com.fg.generation.infrastructure.DispatcherInvocationHandler;
 import com.fg.generation.infrastructure.MethodClassification;
 import com.fg.generation.javassist.JavassistProxyGenerator;
@@ -57,6 +58,17 @@ public interface GenericBucketProxyGenerator {
 
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
+                new DispatcherInvocationHandler<Map<String, Object>>(
+                        new HashMap<>(64),
+                        getPropertiesInvoker(),
+                        getterInvoker(),
+                        setterInvoker()
+                ),
+                contract);
+    }
+
+    static <T> T instantiateByteBuddyProxy(Class<T> contract) {
+        return BytebuddyProxyGenerator.instantiate(
                 new DispatcherInvocationHandler<Map<String, Object>>(
                         new HashMap<>(64),
                         getPropertiesInvoker(),

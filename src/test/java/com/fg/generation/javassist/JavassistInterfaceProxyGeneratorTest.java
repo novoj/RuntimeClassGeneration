@@ -24,23 +24,23 @@ public class JavassistInterfaceProxyGeneratorTest {
 
 	@Test
 	public void JavassistGenerator_Proxy_GetPropertyReturnsSetValue() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals("Jan", person.getFirstName());
 		assertEquals("Novotný", person.getLastName());
 		assertEquals(LocalDate.of(1978, 5, 5), person.getBirthDate());
 	}
 
-    @Test
+	@Test
 	public void JavassistGenerator_Proxy_DefaultMethodComputesAge() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals(38, person.getAge());
 	}
 
 	@Test
 	public void JavassistGenerator_Proxy_GetPropertiesReturnsPopulatedMap() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		final Map<String, Object> props = person.getProperties();
 		assertEquals(3, props.size());
@@ -64,37 +64,43 @@ public class JavassistInterfaceProxyGeneratorTest {
 
 	@Test
 	public void JavassistGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals("{lastName=Novotný, birthDate=1978-05-05, firstName=Jan}", person.toString());
 	}
 
-    @Test
-    public void JavassistGenerator_Proxy_HashCodeContractRespected() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
-        final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
+	@Test
+	public void JavassistGenerator_Proxy_HashCodeContractRespected() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
 
-        assertNotSame(person, samePerson);
-        assertEquals(person.hashCode(), samePerson.hashCode());
-    }
+		assertNotSame(person, samePerson);
+		assertEquals(person.hashCode(), samePerson.hashCode());
+	}
 
-    @Test
-    public void JavassistGenerator_Proxy_EqualsContractRespected() throws Exception {
-        final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
-        final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
-        final CustomizedPerson differentPerson = createTestPersonProxy("Petr", "Novák");
+	@Test
+	public void JavassistGenerator_Proxy_EqualsContractRespected() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson differentPerson = createTestPersonProxy("Petr", "Novák");
 
-        assertNotSame(person, samePerson);
-        assertEquals(person, samePerson);
-        assertNotEquals(person, differentPerson);
-    }
+		assertNotSame(person, samePerson);
+		assertEquals(person, samePerson);
+		assertNotEquals(person, differentPerson);
+	}
 
-    private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
-        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        person.setBirthDate(LocalDate.of(1978, 5, 5));
-        return person;
-    }
+	@Test(expected = UnsupportedOperationException.class)
+	public void JavassistGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		person.doWork();
+	}
+
+	private static CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setBirthDate(LocalDate.of(1978, 5, 5));
+		return person;
+	}
 
 }
