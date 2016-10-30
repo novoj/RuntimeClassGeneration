@@ -1,9 +1,12 @@
 package com.fg.generation.contract.genericBucket;
 
+import com.fg.generation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import com.fg.generation.bytebuddy.BytebuddyProxyGenerator;
 import com.fg.generation.infrastructure.SerializableProxy;
 
 import java.util.Map;
+
+import static com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator.*;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.
@@ -18,7 +21,13 @@ class ByteBuddyDeserializationProxyFactory implements SerializableProxy.Deserial
     @Override
     public Object deserialize(Map<String, Object> target, Class[] interfaces) {
         return BytebuddyProxyGenerator.instantiate(
-                GenericBucketProxyGenerator.getDispatcherInvocationHandlerForGenericBucket(target, ByteBuddyDeserializationProxyFactory.INSTANCE),
+                new ByteBuddyDispatcherInvocationHandler<>(
+                        target,
+                        getPropertiesInvoker(),
+                        getterInvoker(),
+                        setterInvoker(),
+                        SerializableProxy.getWriteReplaceMethodInvoker(ByteBuddyDeserializationProxyFactory.INSTANCE)
+                ),
                 interfaces);
     }
 }

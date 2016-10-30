@@ -1,13 +1,13 @@
 package com.fg.generation.bytebuddy;
 
-import com.fg.generation.infrastructure.DispatcherInvocationHandler;
-import javassist.util.proxy.MethodHandler;
+import com.fg.generation.javassist.JavassistDispatcherInvocationHandler;
 import lombok.extern.apachecommons.CommonsLog;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class BytebuddyProxyGenerator {
     private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
 
-    public static <T> T instantiate(MethodHandler methodHandler, Class... interfaces) {
+    public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
                 getProxyClass(interfaces),
-                methodHandler
+                invocationHandler
         );
     }
 
@@ -49,7 +49,7 @@ public final class BytebuddyProxyGenerator {
                     }
 
                     Class proxyClass = builder
-                            .defineField("desiredField", DispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
+                            .defineField("desiredField", JavassistDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
                             .defineConstructor(Modifier.PUBLIC)
                             .withParameters(String.class)
                             .intercept(MethodCall.invokeSuper())
@@ -66,7 +66,7 @@ public final class BytebuddyProxyGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T instantiateProxy(Class proxyClass, MethodHandler methodHandler) {
+    private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
         try {
             T proxy = (T) proxyClass.newInstance();
 

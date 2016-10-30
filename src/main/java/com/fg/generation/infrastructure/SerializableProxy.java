@@ -10,7 +10,7 @@ import java.util.*;
  * Created by Rodina Novotnych on 29.10.2016.
  */
 public interface SerializableProxy extends Serializable {
-    Set<Class> excludedInterfaces = new HashSet<>(
+    Set<Class> EXCLUDED_CLASSES = new HashSet<>(
             Arrays.asList(
                     java.lang.reflect.Proxy.class,
                     javassist.util.proxy.ProxyObject.class,
@@ -37,11 +37,11 @@ public interface SerializableProxy extends Serializable {
 
     static Class[] combineInterfaces(Class superclass, Class[] interfaces) {
         final List<Class> combined = new LinkedList<>();
-        if (!Object.class.equals(superclass)) {
+        if (!Object.class.equals(superclass) && !EXCLUDED_CLASSES.contains(superclass)) {
             combined.add(superclass);
         }
         for (Class anInterface : interfaces) {
-            if (!excludedInterfaces.contains(anInterface)) {
+            if (!EXCLUDED_CLASSES.contains(anInterface)) {
                 combined.add(anInterface);
             }
         }
