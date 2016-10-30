@@ -1,6 +1,6 @@
 package com.fg.generation.bytebuddy;
 
-import com.fg.generation.contract.GenericBucketProxyGenerator;
+import com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import org.junit.Test;
 

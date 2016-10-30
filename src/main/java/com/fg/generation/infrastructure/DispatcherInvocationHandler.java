@@ -25,10 +25,10 @@ public class DispatcherInvocationHandler<T> implements InvocationHandler, Method
     public DispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
         this.proxyState = proxyState;
         this.methodClassifications = new LinkedList<>();
-        this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
+        this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
         this.methodClassifications.add(Proxy.getProxyStateMethodInvoker());
         Collections.addAll(this.methodClassifications, methodClassifications);

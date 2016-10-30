@@ -1,8 +1,9 @@
-package com.fg.generation.contract;
+package com.fg.generation.contract.genericBucket;
 
 import com.fg.generation.bytebuddy.BytebuddyProxyGenerator;
 import com.fg.generation.infrastructure.DispatcherInvocationHandler;
 import com.fg.generation.infrastructure.MethodClassification;
+import com.fg.generation.infrastructure.SerializableProxy;
 import com.fg.generation.javassist.JavassistProxyGenerator;
 import com.fg.generation.jdkProxy.JdkProxyGenerator;
 
@@ -46,36 +47,33 @@ public interface GenericBucketProxyGenerator {
 
     static <T> T instantiateJdkProxy(Class<T> contract) {
         return JdkProxyGenerator.instantiate(
-                new DispatcherInvocationHandler<Map<String, Object>>(
-                    new HashMap<>(64),
-                    getPropertiesInvoker(),
-                    getterInvoker(),
-                    setterInvoker()
-                ),
-                contract
+                getDispatcherInvocationHandlerForGenericBucket(new HashMap<>(64), JdkProxyDeserializationProxyFactory.INSTANCE),
+                contract, SerializableProxy.class
         );
     }
 
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
-                new DispatcherInvocationHandler<Map<String, Object>>(
-                        new HashMap<>(64),
-                        getPropertiesInvoker(),
-                        getterInvoker(),
-                        setterInvoker()
-                ),
-                contract);
+                getDispatcherInvocationHandlerForGenericBucket(new HashMap<>(64), JavassistDeserializationProxyFactory.INSTANCE),
+                contract, SerializableProxy.class);
     }
 
     static <T> T instantiateByteBuddyProxy(Class<T> contract) {
         return BytebuddyProxyGenerator.instantiate(
-                new DispatcherInvocationHandler<Map<String, Object>>(
-                        new HashMap<>(64),
-                        getPropertiesInvoker(),
-                        getterInvoker(),
-                        setterInvoker()
-                ),
-                contract);
+                getDispatcherInvocationHandlerForGenericBucket(new HashMap<>(64), ByteBuddyDeserializationProxyFactory.INSTANCE),
+                contract, SerializableProxy.class);
     }
 
+    static DispatcherInvocationHandler<Map<String, Object>> getDispatcherInvocationHandlerForGenericBucket(
+            Map<String, Object> state, SerializableProxy.DeserializationProxyFactory deserializationProxyFactory) {
+
+        return new DispatcherInvocationHandler<>(
+                state,
+                getPropertiesInvoker(),
+                getterInvoker(),
+                setterInvoker(),
+                SerializableProxy.getWriteReplaceMethodInvoker(deserializationProxyFactory)
+        );
+
+    }
 }

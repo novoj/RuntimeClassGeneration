@@ -1,6 +1,6 @@
 package com.fg.generation.benchmark;
 
-import com.fg.generation.contract.GenericBucketProxyGenerator;
+import com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;

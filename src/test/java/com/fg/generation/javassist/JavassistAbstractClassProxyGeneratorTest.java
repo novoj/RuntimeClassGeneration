@@ -1,6 +1,6 @@
 package com.fg.generation.javassist;
 
-import com.fg.generation.contract.GenericBucketProxyGenerator;
+import com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
 import com.fg.generation.model.composite.CustomizedPersonAbstract;
 import org.junit.Test;
