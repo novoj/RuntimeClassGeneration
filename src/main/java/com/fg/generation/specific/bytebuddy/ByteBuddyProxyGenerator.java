@@ -8,9 +8,7 @@ import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 @CommonsLog
-public final class BytebuddyProxyGenerator {
+public final class ByteBuddyProxyGenerator {
     private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
+    private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
 
     public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
@@ -57,7 +56,7 @@ public final class BytebuddyProxyGenerator {
                             .method(ElementMatchers.any())
                             .intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
                             .make()
-                            .load(BytebuddyProxyGenerator.class.getClassLoader())
+                            .load(ByteBuddyProxyGenerator.class.getClassLoader())
                             .getLoaded();
 
 
@@ -69,10 +68,17 @@ public final class BytebuddyProxyGenerator {
     @SuppressWarnings("unchecked")
     private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
         try {
-            T proxy = (T) proxyClass.newInstance();
-
-            return proxy;
-        } catch (InstantiationException | IllegalAccessException e) {
+            Constructor constructor = cachedProxyConstructors.computeIfAbsent(
+                    proxyClass, aClass -> {
+                        try {
+                            return proxyClass.getConstructor(InvocationHandler.class);
+                        } catch (NoSuchMethodException e) {
+                            throw new RuntimeException("What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e);
+                        }
+                    }
+            );
+            return (T) constructor.newInstance(invocationHandler);
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("What the heck? Can't create proxy: " + e.getMessage(), e);
         }
     }

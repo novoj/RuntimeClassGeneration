@@ -4,7 +4,7 @@ import com.fg.generation.infrastructure.MethodClassification;
 import com.fg.generation.infrastructure.SerializableProxy;
 import com.fg.generation.specific.bytebuddy.ByteBuddyDeserializationProxyFactory;
 import com.fg.generation.specific.bytebuddy.ByteBuddyDispatcherInvocationHandler;
-import com.fg.generation.specific.bytebuddy.BytebuddyProxyGenerator;
+import com.fg.generation.specific.bytebuddy.ByteBuddyProxyGenerator;
 import com.fg.generation.specific.javassist.JavassistDeserializationProxyFactory;
 import com.fg.generation.specific.javassist.JavassistDispatcherInvocationHandler;
 import com.fg.generation.specific.javassist.JavassistProxyGenerator;
@@ -76,7 +76,7 @@ public interface GenericBucketProxyGenerator {
     }
 
     static <T> T instantiateByteBuddyProxy(Class<T> contract) {
-        return BytebuddyProxyGenerator.instantiate(
+        return ByteBuddyProxyGenerator.instantiate(
                 new ByteBuddyDispatcherInvocationHandler<>(
                         new HashMap<String, Object>(64),
                         getPropertiesInvoker(),

@@ -18,7 +18,7 @@ public class ByteBuddyDeserializationProxyFactory implements SerializableProxy.D
 
     @Override
     public Object deserialize(Map<String, Object> target, Class[] interfaces) {
-        return BytebuddyProxyGenerator.instantiate(
+        return ByteBuddyProxyGenerator.instantiate(
                 new ByteBuddyDispatcherInvocationHandler<>(
                         target,
                         getPropertiesInvoker(),

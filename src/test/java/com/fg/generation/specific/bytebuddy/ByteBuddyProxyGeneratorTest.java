@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class BytebuddyProxyGeneratorTest {
+public class ByteBuddyProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
