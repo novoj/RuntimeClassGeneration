@@ -23,6 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ByteBuddyProxyGenerator {
     private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
     private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
+    private static Constructor<Object> objectClassConstructor;
+
+    static {
+        try {
+            objectClassConstructor = Object.class.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
@@ -48,11 +57,18 @@ public final class ByteBuddyProxyGenerator {
                         builder = new ByteBuddy().subclass(interfaces[0]).implement(interfaceType);
                     }
 
-                    Class proxyClass = builder
+                    Class proxyClass = new ByteBuddy().subclass(Object.class).implement((Type[]) interfaces)
                             .defineField("dispatcherInvocationHandler", ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
                             .defineConstructor(Modifier.PUBLIC)
                             .withParameter(ByteBuddyDispatcherInvocationHandler.class)
-                            .intercept(MethodCall.invokeSuper().andThen(FieldAccessor.ofField("dispatcherInvocationHandler").setsArgumentAt(0)))
+                            .intercept(
+                                    MethodCall.invoke(objectClassConstructor)
+                                            .onSuper()
+                                            .andThen(
+                                                    FieldAccessor.ofField("dispatcherInvocationHandler")
+                                                            .setsArgumentAt(0)
+                                            )
+                            )
                             .method(ElementMatchers.any())
                             .intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
                             .make()
@@ -71,9 +87,9 @@ public final class ByteBuddyProxyGenerator {
             Constructor constructor = cachedProxyConstructors.computeIfAbsent(
                     proxyClass, aClass -> {
                         try {
-                            return proxyClass.getConstructor(InvocationHandler.class);
+                            return proxyClass.getConstructor(ByteBuddyDispatcherInvocationHandler.class);
                         } catch (NoSuchMethodException e) {
-                            throw new RuntimeException("What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e);
+                            throw new RuntimeException("What the heck? Can't find proper objectClassConstructor on proxy: " + e.getMessage(), e);
                         }
                     }
             );
