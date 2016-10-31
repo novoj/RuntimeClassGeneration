@@ -1,18 +1,16 @@
-package com.fg.generation.contract.genericBucket;
+package com.fg.generation.specific.javassist;
 
 import com.fg.generation.infrastructure.SerializableProxy;
-import com.fg.generation.javassist.JavassistDispatcherInvocationHandler;
-import com.fg.generation.javassist.JavassistProxyGenerator;
 
 import java.util.Map;
 
-import static com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator.*;
+import static com.fg.generation.contract.GenericBucketProxyGenerator.*;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.
  */
-class JavassistDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
-    static JavassistDeserializationProxyFactory INSTANCE = new JavassistDeserializationProxyFactory();
+public class JavassistDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
+    public static JavassistDeserializationProxyFactory INSTANCE = new JavassistDeserializationProxyFactory();
 
     private JavassistDeserializationProxyFactory() {
         //singleton

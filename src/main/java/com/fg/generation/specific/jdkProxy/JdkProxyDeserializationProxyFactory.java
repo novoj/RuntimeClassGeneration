@@ -1,18 +1,16 @@
-package com.fg.generation.contract.genericBucket;
+package com.fg.generation.specific.jdkProxy;
 
 import com.fg.generation.infrastructure.SerializableProxy;
-import com.fg.generation.jdkProxy.JdkProxyDispatcherInvocationHandler;
-import com.fg.generation.jdkProxy.JdkProxyGenerator;
 
 import java.util.Map;
 
-import static com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator.*;
+import static com.fg.generation.contract.GenericBucketProxyGenerator.*;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.
  */
-class JdkProxyDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
-    static JdkProxyDeserializationProxyFactory INSTANCE = new JdkProxyDeserializationProxyFactory();
+public class JdkProxyDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
+    public static JdkProxyDeserializationProxyFactory INSTANCE = new JdkProxyDeserializationProxyFactory();
 
     private JdkProxyDeserializationProxyFactory() {
         // singleton

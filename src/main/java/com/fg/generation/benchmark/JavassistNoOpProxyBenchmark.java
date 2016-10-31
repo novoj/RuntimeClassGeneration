@@ -1,7 +1,7 @@
 package com.fg.generation.benchmark;
 
-import com.fg.generation.javassist.JavassistNoOpProxyGenerator;
 import com.fg.generation.model.composite.CustomizedPerson;
+import com.fg.generation.specific.javassist.JavassistNoOpProxyGenerator;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 

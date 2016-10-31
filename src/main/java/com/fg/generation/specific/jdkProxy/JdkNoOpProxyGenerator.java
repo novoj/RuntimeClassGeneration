@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy;
+package com.fg.generation.specific.jdkProxy;
 
 import java.lang.reflect.InvocationHandler;
 

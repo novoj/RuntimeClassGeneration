@@ -1,11 +1,12 @@
-package com.fg.generation.bytebuddy;
+package com.fg.generation.specific.bytebuddy;
 
-import com.fg.generation.javassist.JavassistDispatcherInvocationHandler;
 import lombok.extern.apachecommons.CommonsLog;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.FieldAccessor;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodCall;
+import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
@@ -49,14 +50,14 @@ public final class BytebuddyProxyGenerator {
                     }
 
                     Class proxyClass = builder
-                            .defineField("desiredField", JavassistDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
+                            .defineField("dispatcherInvocationHandler", ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
                             .defineConstructor(Modifier.PUBLIC)
-                            .withParameters(String.class)
-                            .intercept(MethodCall.invokeSuper())
-                            //.method(ElementMatchers.any())
-                            //.intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
+                            .withParameter(ByteBuddyDispatcherInvocationHandler.class)
+                            .intercept(MethodCall.invokeSuper().andThen(FieldAccessor.ofField("dispatcherInvocationHandler").setsArgumentAt(0)))
+                            .method(ElementMatchers.any())
+                            .intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
                             .make()
-                            .load(BytebuddyProxyGenerator.class.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+                            .load(BytebuddyProxyGenerator.class.getClassLoader())
                             .getLoaded();
 
 

@@ -1,18 +1,16 @@
-package com.fg.generation.contract.genericBucket;
+package com.fg.generation.specific.bytebuddy;
 
-import com.fg.generation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
-import com.fg.generation.bytebuddy.BytebuddyProxyGenerator;
 import com.fg.generation.infrastructure.SerializableProxy;
 
 import java.util.Map;
 
-import static com.fg.generation.contract.genericBucket.GenericBucketProxyGenerator.*;
+import static com.fg.generation.contract.GenericBucketProxyGenerator.*;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.
  */
-class ByteBuddyDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
-    static ByteBuddyDeserializationProxyFactory INSTANCE = new ByteBuddyDeserializationProxyFactory();
+public class ByteBuddyDeserializationProxyFactory implements SerializableProxy.DeserializationProxyFactory<Map<String, Object>> {
+    public static ByteBuddyDeserializationProxyFactory INSTANCE = new ByteBuddyDeserializationProxyFactory();
 
     private ByteBuddyDeserializationProxyFactory() {
         // singleton

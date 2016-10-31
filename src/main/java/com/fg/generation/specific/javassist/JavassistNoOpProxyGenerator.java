@@ -1,4 +1,4 @@
-package com.fg.generation.javassist;
+package com.fg.generation.specific.javassist;
 
 import javassist.util.proxy.MethodHandler;
 

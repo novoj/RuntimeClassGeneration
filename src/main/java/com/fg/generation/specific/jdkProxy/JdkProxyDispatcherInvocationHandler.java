@@ -1,11 +1,11 @@
-package com.fg.generation.javassist;
+package com.fg.generation.specific.jdkProxy;
 
 import com.fg.generation.infrastructure.AbstractDispatcherInvocationHandler;
 import com.fg.generation.infrastructure.ContextWiseMethodInvocationHandler;
 import com.fg.generation.infrastructure.MethodClassification;
-import javassist.util.proxy.MethodHandler;
 import lombok.extern.apachecommons.CommonsLog;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,24 +14,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Rodina Novotnych on 28.10.2016.
  */
 @CommonsLog
-public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements MethodHandler {
+public class JdkProxyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements InvocationHandler {
 
     /* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, ContextWiseMethodInvocationHandler> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public JavassistDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
+    public JdkProxyDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 
     @Override
-    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         final ContextWiseMethodInvocationHandler invocationHandler =
                 CLASSIFICATION_CACHE.computeIfAbsent(
-                        thisMethod,
+                        method,
                         this::getContextWiseMethodInvocationHandler
                 );
 
-        return invocationHandler.invoke(self, proceed == null ? thisMethod : proceed, args, proxyState);
+        return invocationHandler.invoke(proxy, method, args, proxyState);
     }
 
 }

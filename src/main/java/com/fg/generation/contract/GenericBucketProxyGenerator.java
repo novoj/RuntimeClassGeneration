@@ -1,13 +1,16 @@
-package com.fg.generation.contract.genericBucket;
+package com.fg.generation.contract;
 
-import com.fg.generation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
-import com.fg.generation.bytebuddy.BytebuddyProxyGenerator;
 import com.fg.generation.infrastructure.MethodClassification;
 import com.fg.generation.infrastructure.SerializableProxy;
-import com.fg.generation.javassist.JavassistDispatcherInvocationHandler;
-import com.fg.generation.javassist.JavassistProxyGenerator;
-import com.fg.generation.jdkProxy.JdkProxyDispatcherInvocationHandler;
-import com.fg.generation.jdkProxy.JdkProxyGenerator;
+import com.fg.generation.specific.bytebuddy.ByteBuddyDeserializationProxyFactory;
+import com.fg.generation.specific.bytebuddy.ByteBuddyDispatcherInvocationHandler;
+import com.fg.generation.specific.bytebuddy.BytebuddyProxyGenerator;
+import com.fg.generation.specific.javassist.JavassistDeserializationProxyFactory;
+import com.fg.generation.specific.javassist.JavassistDispatcherInvocationHandler;
+import com.fg.generation.specific.javassist.JavassistProxyGenerator;
+import com.fg.generation.specific.jdkProxy.JdkProxyDeserializationProxyFactory;
+import com.fg.generation.specific.jdkProxy.JdkProxyDispatcherInvocationHandler;
+import com.fg.generation.specific.jdkProxy.JdkProxyGenerator;
 
 import java.util.HashMap;
 import java.util.Map;

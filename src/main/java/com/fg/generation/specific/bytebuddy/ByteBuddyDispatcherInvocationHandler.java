@@ -1,4 +1,4 @@
-package com.fg.generation.jdkProxy;
+package com.fg.generation.specific.bytebuddy;
 
 import com.fg.generation.infrastructure.AbstractDispatcherInvocationHandler;
 import com.fg.generation.infrastructure.ContextWiseMethodInvocationHandler;
@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Rodina Novotnych on 28.10.2016.
  */
 @CommonsLog
-public class JdkProxyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements InvocationHandler {
+public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements InvocationHandler {
 
     /* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, ContextWiseMethodInvocationHandler> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public JdkProxyDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
+    public ByteBuddyDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 
