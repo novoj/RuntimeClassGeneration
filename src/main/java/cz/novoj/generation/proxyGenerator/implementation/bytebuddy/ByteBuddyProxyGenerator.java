@@ -8,7 +8,10 @@ import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,15 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ByteBuddyProxyGenerator {
     private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
     private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
-    private static Constructor<Object> objectClassConstructor;
-
-    static {
-        try {
-            objectClassConstructor = Object.class.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
@@ -47,22 +41,26 @@ public final class ByteBuddyProxyGenerator {
 
                     DynamicType.Builder<?> builder;
 
+                    Class superClass;
                     if (interfaces[0].isInterface()) {
-                        builder = new ByteBuddy().subclass(Object.class).implement((Type[]) interfaces);
+                        final Class[] finalContract = new Class[interfaces.length + 1];
+                        finalContract[0] = cz.novoj.generation.proxyGenerator.infrastructure.Proxy.class;
+                        System.arraycopy(interfaces, 0, finalContract, 1, interfaces.length);
+
+                        superClass = Object.class;
+                        builder = new ByteBuddy().subclass(Object.class).implement(finalContract);
                     } else {
-                        Type[] interfaceType = new Type[interfaces.length - 1];
-                        for (int i = 1; i < interfaces.length; i++) {
-                            interfaceType[i - 1] = interfaces[i];
-                        } // todo copyrangeof?
-                        builder = new ByteBuddy().subclass(interfaces[0]).implement(interfaceType);
+                        superClass = interfaces[0];
+                        interfaces[0] = cz.novoj.generation.proxyGenerator.infrastructure.Proxy.class;
+                        builder = new ByteBuddy().subclass(superClass).implement(interfaces);
                     }
 
-                    Class proxyClass = new ByteBuddy().subclass(Object.class).implement((Type[]) interfaces)
+                    Class proxyClass = builder
                             .defineField("dispatcherInvocationHandler", ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
                             .defineConstructor(Modifier.PUBLIC)
                             .withParameter(ByteBuddyDispatcherInvocationHandler.class)
                             .intercept(
-                                    MethodCall.invoke(objectClassConstructor)
+                                    MethodCall.invoke(getDefaultConstructor(superClass))
                                             .onSuper()
                                             .andThen(
                                                     FieldAccessor.ofField("dispatcherInvocationHandler")
@@ -89,7 +87,7 @@ public final class ByteBuddyProxyGenerator {
                         try {
                             return proxyClass.getConstructor(ByteBuddyDispatcherInvocationHandler.class);
                         } catch (NoSuchMethodException e) {
-                            throw new RuntimeException("What the heck? Can't find proper objectClassConstructor on proxy: " + e.getMessage(), e);
+                            throw new RuntimeException("What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e);
                         }
                     }
             );
@@ -97,6 +95,18 @@ public final class ByteBuddyProxyGenerator {
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("What the heck? Can't create proxy: " + e.getMessage(), e);
         }
+    }
+
+    private static Constructor getDefaultConstructor(Class clazz) {
+        return cachedProxyConstructors.computeIfAbsent(
+                clazz, aClass -> {
+                    try {
+                        return clazz.getConstructor();
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException("What the heck? Can't find default constructor on abstract class: " + e.getMessage(), e);
+                    }
+                }
+        );
     }
 
 }
