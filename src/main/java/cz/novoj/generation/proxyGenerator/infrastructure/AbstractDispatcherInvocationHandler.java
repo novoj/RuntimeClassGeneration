@@ -32,7 +32,7 @@ public class AbstractDispatcherInvocationHandler<T> {
         return methodClassifications.stream()
                 //find proper method classification (invoker handler) for passed method
                 .filter(methodClassification -> methodClassification.matches(method))
-                //crete contextwise invocation handler (invocation handler curried with method state)
+                //create contextwise invocation handler (invocation handler curried with method state)
                 .map(methodClassification -> methodClassification.createContextInvocationHandler(method))
                 .findFirst()
                 //return missing invocation handler throwing exception

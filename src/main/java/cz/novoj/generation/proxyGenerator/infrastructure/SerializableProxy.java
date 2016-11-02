@@ -20,12 +20,12 @@ public interface SerializableProxy extends Serializable {
 
     Object writeReplace() throws ObjectStreamException;
 
-    static <T> MethodClassification<Void, T> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
+    static <T> MethodClassification<Void, T, Proxy> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(SerializableProxy.class.getDeclaredMethod("writeReplace")),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
-            final Object state = ((Proxy) proxy).getProxyState();
+            final Object state = proxy.getProxyState();
             final Class superclass = proxy.getClass().getSuperclass();
             final Class[] interfaces = proxy.getClass().getInterfaces();
             final Class[] allInterfaces = combineInterfaces(superclass, interfaces);

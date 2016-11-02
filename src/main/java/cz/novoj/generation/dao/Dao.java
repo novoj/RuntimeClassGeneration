@@ -7,4 +7,6 @@ public interface Dao<T> {
 
     Class<T> getContractClass();
 
+    T createNew();
+
 }

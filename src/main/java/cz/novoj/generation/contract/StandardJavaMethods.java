@@ -45,7 +45,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object> toStringMethodInvoker() {
+    static MethodClassification<Void, Object, Proxy> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("toString")),
         /* methodContext */ method -> null,
@@ -53,7 +53,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object> hashCodeMethodInvoker() {
+    static MethodClassification<Void, Object, Proxy> hashCodeMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("hashCode")),
         /* methodContext */ method -> null,
@@ -61,7 +61,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object> equalsMethodInvoker() {
+    static MethodClassification<Void, Object, Proxy> equalsMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("equals", Object.class)),
         /* methodContext */ method -> null,

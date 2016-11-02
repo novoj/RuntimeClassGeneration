@@ -1,5 +1,7 @@
 package cz.novoj.generation.contract;
 
+import cz.novoj.generation.model.GenericBucket;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDeserializationProxyFactory;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
@@ -12,9 +14,6 @@ import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenera
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
@@ -23,38 +22,59 @@ import static org.apache.commons.lang.StringUtils.uncapitalize;
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 public interface GenericBucketProxyGenerator {
-    String GET_PREFIX = "get";
-    String SET_PREFIX = "set";
+    String GET = "get";
+    String SET = "set";
+    String GET_PROPERTY = "getProperty";
+    String SET_PROPERTY = "setProperty";
+    String GET_PROPERTIES = "getProperties";
 
-    static MethodClassification<String, Map<String, Object>> getterInvoker() {
+    static MethodClassification<String, GenericBucket, PropertyAccessor> getterInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.getName().startsWith(GET_PREFIX) && method.getParameterCount() == 0,
-        /* methodContext */ method -> uncapitalize(method.getName().substring(GET_PREFIX.length())),
+        /* matcher */       method -> method.getName().startsWith(GET) && method.getParameterCount() == 0,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(GET.length())),
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(methodContext)
         );
     }
 
-    static MethodClassification<String, Map<String, Object>> setterInvoker() {
+    static MethodClassification<String, GenericBucket, PropertyAccessor> setterInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.getName().startsWith(SET_PREFIX) && method.getParameterCount() == 1,
-        /* methodContext */ method -> uncapitalize(method.getName().substring(SET_PREFIX.length())),
+        /* matcher */       method -> method.getName().startsWith(SET) && method.getParameterCount() == 1,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(SET.length())),
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(methodContext, args[0])
         );
     }
 
-    static MethodClassification<Void, Map<String, Object>> getPropertiesInvoker() {
+    static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.getName().equals("getProperties") && method.getParameterCount() == 0,
+        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(GET_PROPERTIES)),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+        );
+    }
+
+    static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertyInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(GET_PROPERTY, String.class)),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
+        );
+    }
+
+    static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(SET_PROPERTY, String.class, Object.class)),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(String.valueOf(args[0]), args[1])
         );
     }
 
     static <T> T instantiateJdkProxy(Class<T> contract) {
         return JdkProxyGenerator.instantiate(
                 new JdkProxyDispatcherInvocationHandler<>(
-                        new HashMap<String, Object>(64),
+                        new GenericBucket(64),
                         getPropertiesInvoker(),
+                        getPropertyInvoker(),
+                        setPropertyInvoker(),
                         getterInvoker(),
                         setterInvoker(),
                         SerializableProxy.getWriteReplaceMethodInvoker(JdkProxyDeserializationProxyFactory.INSTANCE)
@@ -66,8 +86,10 @@ public interface GenericBucketProxyGenerator {
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
                 new JavassistDispatcherInvocationHandler<>(
-                        new HashMap<String, Object>(64),
+                        new GenericBucket(64),
                         getPropertiesInvoker(),
+                        getPropertyInvoker(),
+                        setPropertyInvoker(),
                         getterInvoker(),
                         setterInvoker(),
                         SerializableProxy.getWriteReplaceMethodInvoker(JavassistDeserializationProxyFactory.INSTANCE)
@@ -78,8 +100,10 @@ public interface GenericBucketProxyGenerator {
     static <T> T instantiateByteBuddyProxy(Class<T> contract) {
         return ByteBuddyProxyGenerator.instantiate(
                 new ByteBuddyDispatcherInvocationHandler<>(
-                        new HashMap<String, Object>(64),
+                        new GenericBucket(64),
                         getPropertiesInvoker(),
+                        getPropertyInvoker(),
+                        setPropertyInvoker(),
                         getterInvoker(),
                         setterInvoker(),
                         SerializableProxy.getWriteReplaceMethodInvoker(ByteBuddyDeserializationProxyFactory.INSTANCE)

@@ -9,10 +9,10 @@ import java.util.function.Function;
  * Created by Rodina Novotnych on 28.10.2016.
  */
 @RequiredArgsConstructor
-public class MethodClassification<T, S> {
+public class MethodClassification<T, S, U> {
     private final MethodMatcher methodMatcher;
     private final Function<Method, T> methodClassificationContext;
-    private final MethodInvocationHandler<T, S> invocationHandler;
+    private final MethodInvocationHandler<T, S, U> invocationHandler;
 
     public boolean matches(Method method) {
         try {
@@ -25,7 +25,7 @@ public class MethodClassification<T, S> {
         }
     }
 
-    public ContextWiseMethodInvocationHandler<S> createContextInvocationHandler(Method classificationMethod) {
+    public ContextWiseMethodInvocationHandler<S, U> createContextInvocationHandler(Method classificationMethod) {
         return (proxy, executionMethod, args, proxyState) -> invocationHandler.invoke(
                 proxy, executionMethod, args, methodClassificationContext.apply(classificationMethod), proxyState
         );

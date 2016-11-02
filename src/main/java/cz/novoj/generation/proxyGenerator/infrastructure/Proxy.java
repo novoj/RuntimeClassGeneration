@@ -7,7 +7,7 @@ public interface Proxy {
 
     Object getProxyState();
 
-    static MethodClassification<Void, Object> getProxyStateMethodInvoker() {
+    static MethodClassification<Void, Object, Proxy> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.equals(Proxy.class.getDeclaredMethod("getProxyState")),
         /* methodContext */ method -> null,
