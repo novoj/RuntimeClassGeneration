@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
 import java.util.Map;

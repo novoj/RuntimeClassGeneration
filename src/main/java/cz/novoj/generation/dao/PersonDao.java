@@ -1,8 +1,8 @@
 package cz.novoj.generation.dao;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.dao.Dao;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.composite.CustomizedPerson;
-import cz.novoj.generation.model.traits.Person;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -37,12 +37,15 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
                 });
     }
 
+    @Override
+    public abstract List<CustomizedPerson> getAll();
+
     public abstract void add(String firstName, String lastName, LocalDate birthDate);
 
-    public abstract Person getByFirstNameAndLastName(String firstName, String lastName);
+    public abstract CustomizedPerson getByFirstNameAndLastName(String firstName, String lastName);
 
-    public abstract List<Person> getByAge(int lessThan);
+    public abstract CustomizedPerson getByAgeLessThanAndFirstNameEq(int age, String lastName);
 
-    public abstract List<Person> getAll();
+    public abstract List<CustomizedPerson> getByAgeLessThan(int age);
 
 }

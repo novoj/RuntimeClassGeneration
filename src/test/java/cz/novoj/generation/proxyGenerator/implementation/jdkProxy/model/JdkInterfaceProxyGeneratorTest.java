@@ -1,7 +1,8 @@
-package cz.novoj.generation.proxyGenerator.implementation.bytebuddy;
+package cz.novoj.generation.proxyGenerator.implementation.jdkProxy.model;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.composite.CustomizedPerson;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -14,32 +15,32 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class ByteBuddyProxyGeneratorTest {
+public class JdkInterfaceProxyGeneratorTest {
 
 	@Test
-	public void ByteBuddyProxyGenerator_Proxy_Created() throws Exception {
-		CustomizedPerson person = GenericBucketProxyGenerator.instantiateByteBuddyProxy(CustomizedPerson.class);
+	public void JdkProxyGenerator_Proxy_Created() throws Exception {
+		CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
 		assertNotNull(person);
 	}
 
 	@Test
-	public void ByteBuddyProxyGenerator_Proxy_GetPropertyReturnsSetValue() throws Exception {
+	public void JdkProxyGenerator_Proxy_GetPropertyReturnsSetValue() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("Jan", person.getFirstName());
-		assertEquals("Novotný", person.getLastName());
+		Assert.assertEquals("Jan", person.getFirstName());
+		Assert.assertEquals("Novotný", person.getLastName());
 		assertEquals(LocalDate.of(1978, 5, 5), person.getBirthDate());
 	}
 
     @Test
-	public void ByteBuddyProxyGenerator_Proxy_DefaultMethodComputesAge() throws Exception {
+	public void JdkProxyGenerator_Proxy_DefaultMethodComputesAge() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals(38, person.getAge());
 	}
 
 	@Test
-	public void ByteBuddyProxyGenerator_Proxy_GetPropertiesReturnsPopulatedMap() throws Exception {
+	public void JdkProxyGenerator_Proxy_GetPropertiesReturnsPopulatedMap() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		final Map<String, Object> props = person.getProperties();
@@ -50,27 +51,27 @@ public class ByteBuddyProxyGeneratorTest {
 	}
 
 	@Test
-	public void ByteBuddyProxyGenerator_Proxy_PropertiesCanBeSetIntoMap() throws Exception {
+	public void JdkProxyGenerator_Proxy_PropertiesCanBeSetIntoMap() throws Exception {
 		final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
 		final Map<String, Object> props = person.getProperties();
 		props.put("firstName", "Jan");
 		props.put("lastName", "Novotný");
 		props.put("birthDate", LocalDate.of(1978, 5, 5));
 
-		assertEquals("Jan", person.getFirstName());
-		assertEquals("Novotný", person.getLastName());
+		Assert.assertEquals("Jan", person.getFirstName());
+		Assert.assertEquals("Novotný", person.getLastName());
 		assertEquals(LocalDate.of(1978, 5, 5), person.getBirthDate());
 	}
 
 	@Test
-	public void ByteBuddyProxyGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
+	public void JdkProxyGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals("{lastName=Novotný, birthDate=1978-05-05, firstName=Jan}", person.toString());
 	}
 
     @Test
-    public void ByteBuddyProxyGenerator_Proxy_HashCodeContractRespected() throws Exception {
+    public void JdkProxyGenerator_Proxy_HashCodeContractRespected() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
         final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
 
@@ -79,7 +80,7 @@ public class ByteBuddyProxyGeneratorTest {
     }
 
     @Test
-    public void ByteBuddyProxyGenerator_Proxy_EqualsContractRespected() throws Exception {
+    public void JdkProxyGenerator_Proxy_EqualsContractRespected() throws Exception {
         final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
         final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
         final CustomizedPerson differentPerson = createTestPersonProxy("Petr", "Novák");
@@ -89,8 +90,14 @@ public class ByteBuddyProxyGeneratorTest {
         assertNotEquals(person, differentPerson);
     }
 
+	@Test(expected = UnsupportedOperationException.class)
+	public void JdkProxyGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		person.doWork();
+	}
+
     private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
-        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateByteBuddyProxy(CustomizedPerson.class);
+        final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setBirthDate(LocalDate.of(1978, 5, 5));

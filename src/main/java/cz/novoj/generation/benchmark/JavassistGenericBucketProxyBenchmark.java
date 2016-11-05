@@ -1,6 +1,6 @@
 package cz.novoj.generation.benchmark;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.composite.CustomizedPerson;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;

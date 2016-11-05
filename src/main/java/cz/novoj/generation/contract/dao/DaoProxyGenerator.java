@@ -1,9 +1,9 @@
-package cz.novoj.generation.contract;
+package cz.novoj.generation.contract.dao;
 
-import cz.novoj.generation.contract.helper.PropertyPopulator;
-import cz.novoj.generation.dao.Dao;
-import cz.novoj.generation.dao.GenericBucketRepository;
-import cz.novoj.generation.model.traits.PropertyAccessor;
+import cz.novoj.generation.contract.dao.dto.GenericBucketRepository;
+import cz.novoj.generation.contract.dao.helper.GetMethodDecomposition;
+import cz.novoj.generation.contract.dao.helper.PropertyPopulator;
+import cz.novoj.generation.contract.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDispatcherInvocationHandler;
@@ -19,9 +19,10 @@ import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 public interface DaoProxyGenerator {
-    String GET_ALL = "getAll";
     String ADD = "add";
     String GET = "get";
+    String GET_BY = "getBy";
+    String GET_ALL = "getAll";
 
     static <T extends PropertyAccessor> MethodClassification<Void, GenericBucketRepository<T>, Dao<T>> getAllInvoker() {
         return new MethodClassification<>(
@@ -35,15 +36,18 @@ public interface DaoProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> ADD.equals(method.getName()),
         /* methodContext */ PropertyPopulator::new,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.populate(proxy.createNew(), args));
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+            T item = methodContext.populate(proxy.createNew(), args);
+            proxyState.add(item);
+            return null;
+        });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<String, GenericBucketRepository<T>, Dao<T>> getByInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<GetMethodDecomposition<T>, GenericBucketRepository<T>, Dao<T>> getByInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.getName().startsWith(GET) && method.getParameterCount() == 0,
-        /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.getData().stream().findFirst().orElse(null)
-        );
+        /* matcher */       method -> method.getName().startsWith(GET_BY),
+        /* methodContext */ GetMethodDecomposition::new,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
     static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJdkProxy(Class<T> contract) {

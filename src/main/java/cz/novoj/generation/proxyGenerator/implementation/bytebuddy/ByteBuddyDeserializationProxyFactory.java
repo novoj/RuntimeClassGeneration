@@ -4,7 +4,7 @@ import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
 import java.util.Map;
 
-import static cz.novoj.generation.contract.GenericBucketProxyGenerator.*;
+import static cz.novoj.generation.contract.model.GenericBucketProxyGenerator.*;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.

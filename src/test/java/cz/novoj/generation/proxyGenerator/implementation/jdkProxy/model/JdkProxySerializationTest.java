@@ -1,6 +1,6 @@
-package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
+package cz.novoj.generation.proxyGenerator.implementation.jdkProxy.model;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.composite.CustomizedPerson;
 import org.junit.Test;
 
