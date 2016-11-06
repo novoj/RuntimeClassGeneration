@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 
@@ -75,4 +76,19 @@ public class JavassistPersonDaoTest {
         log.debug(delacruz);
     }
 
+    @Test
+    public void PersonDao_getAllSortedByFirstName_returnsSortedList() throws Exception {
+        List<CustomizedPerson> personsSortedByFirstName = personDao.getAllSortedByFirstName();
+
+        assertEquals(500, personsSortedByFirstName.size());
+        CustomizedPerson previousPerson = null;
+        for (CustomizedPerson person : personsSortedByFirstName) {
+            log.debug(person);
+            Integer comparationResult = ofNullable(previousPerson)
+                    .map(previous -> previous.getFirstName().compareTo(person.getFirstName()))
+                    .orElse(-1);
+            assertTrue("Comparation returned " + comparationResult, comparationResult <= 0);
+            previousPerson = person;
+        }
+    }
 }

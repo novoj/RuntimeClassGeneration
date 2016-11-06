@@ -1,5 +1,6 @@
-package cz.novoj.generation.contract.dao.helper;
+package cz.novoj.generation.contract.dao.executor;
 
+import cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import lombok.Data;
 
@@ -12,10 +13,10 @@ import java.util.function.BiConsumer;
  * Created by Rodina Novotnych on 02.11.2016.
  */
 @Data
-public class PropertyPopulator {
+public class AddMethodExecutor {
     private final List<BiConsumer<PropertyAccessor, Object[]>> populators;
 
-    public PropertyPopulator(Method method) {
+    public AddMethodExecutor(Method method) {
         populators = new LinkedList<>();
         final String[] parameterNames = ReflectionUtils.getParameterNames(method);
         for (int i = 0; i < parameterNames.length; i++) {

@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.dao.helper;
+package cz.novoj.generation.contract.dao.executor.helper;
 
 import com.sun.beans.WeakCache;
 import cz.novoj.generation.contract.model.PropertyAccessor;

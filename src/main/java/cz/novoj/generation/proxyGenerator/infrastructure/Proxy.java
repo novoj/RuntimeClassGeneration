@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
-import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
 
 /**
  * Created by Rodina Novotnych on 28.10.2016.

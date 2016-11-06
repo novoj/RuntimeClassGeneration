@@ -1,5 +1,6 @@
-package cz.novoj.generation.contract.dao.dto;
+package cz.novoj.generation.contract.dao.keyword.instance;
 
+import cz.novoj.generation.contract.dao.keyword.KeywordContainer;
 import lombok.Data;
 
 import java.util.LinkedList;

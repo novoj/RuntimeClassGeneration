@@ -6,7 +6,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.*;
 
-import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
 
 /**
  * Created by Rodina Novotnych on 29.10.2016.

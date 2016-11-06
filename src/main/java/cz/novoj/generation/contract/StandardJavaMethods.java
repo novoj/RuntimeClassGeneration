@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
 
 /**
  * No documentation needed, just look at the methods.

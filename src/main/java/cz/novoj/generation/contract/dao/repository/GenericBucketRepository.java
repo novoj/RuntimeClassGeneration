@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.dao.dto;
+package cz.novoj.generation.contract.dao.repository;
 
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import lombok.Getter;

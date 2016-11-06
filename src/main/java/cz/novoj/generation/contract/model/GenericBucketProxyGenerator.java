@@ -13,7 +13,7 @@ import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenera
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
-import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**

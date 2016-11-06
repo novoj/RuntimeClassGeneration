@@ -1,12 +1,15 @@
 package cz.novoj.generation.contract.model;
 
-import cz.novoj.generation.contract.dao.dto.FilterKeyword;
-import cz.novoj.generation.contract.dao.dto.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.helper.ReflectionUtils;
+import cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils;
+import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
+import cz.novoj.generation.contract.dao.keyword.sort.SortKeyword;
+import cz.novoj.generation.contract.dao.keyword.sort.SortKeywordContainer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -76,6 +79,25 @@ public interface PropertyAccessor {
 		}
 		return u -> false;
 	}
+
+	static <U extends PropertyAccessor> int compare(SortKeyword keyword, U item, U other, String propertyName) {
+        final Optional<Object> existingPropertyValue = ofNullable(
+                ofNullable(item.getProperty(propertyName)).orElseGet(() -> ReflectionUtils.getProperty(item, propertyName))
+        );
+
+        switch (keyword) {
+            case Asc: return existingPropertyValue.map(o -> ((Comparable)o).compareTo(other.getProperty(propertyName))).orElse(0);
+            case Desc: return existingPropertyValue.map(o -> ((Comparable)o).compareTo(other.getProperty(propertyName)) * -1).orElse(0);
+        }
+		return 0;
+	}
+
+    static <U extends PropertyAccessor> Comparator<U> compare(SortKeywordContainer keyword, Comparator<U> previousComparator, Comparator<U> comparator) {
+        switch (keyword) {
+            case And: return ofNullable(previousComparator).map(c -> c.thenComparing(comparator)).orElse(comparator);
+        }
+        return (o1, o2) -> 0;
+    }
 
 	static <U> boolean isPresentInStream(Object itemValue, Stream<U> stream) {
 		return stream.filter(o -> o.equals(itemValue)).findAny().isPresent();

@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Rodina Novotnych on 31.10.2016.
@@ -40,6 +41,8 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
     @Override
     public abstract List<CustomizedPerson> getAll();
 
+    public abstract List<CustomizedPerson> getAllSortedByFirstName();
+
     public abstract void add(String firstName, String lastName, LocalDate birthDate);
 
     public abstract CustomizedPerson getByFirstNameAndLastName(String firstName, String lastName);
@@ -47,5 +50,9 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
     public abstract CustomizedPerson getByAgeLessThanAndFirstNameEq(int age, String lastName);
 
     public abstract List<CustomizedPerson> getByAgeLessThan(int age);
+
+    public abstract Optional<CustomizedPerson> getByLastNameIsNull();
+
+    public abstract List<CustomizedPerson> getByFirstNameInSortedByAgeDesc(String... firstNames);
 
 }
