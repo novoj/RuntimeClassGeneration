@@ -1,12 +1,12 @@
-package cz.novoj.generation.contract.dao.executor.helper;
+package cz.novoj.generation.contract.dao.executor.dto;
 
-import cz.novoj.generation.contract.dao.keyword.Keyword;
-import cz.novoj.generation.contract.dao.keyword.KeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordInstance;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithConstant;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithSubKeywords;
+import cz.novoj.generation.contract.dao.query.instance.ContainerQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.LeafQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.QueryNode;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -21,39 +21,31 @@ import java.util.List;
  * Created by Rodina Novotnych on 06.11.2016.
  */
 @Data
-class KeywordInstanceAccumulator {
+public class KeywordInstanceAccumulator {
     private final Keyword defaultKeyword;
     private final Keyword.Kind kind;
-    private KeywordWithSubKeywords rootKeyword;
+    private ContainerQueryNode rootKeyword;
     private LinkedList<String> words = new LinkedList<>();
     private LinkedList<Keyword> keywordAdepts = new LinkedList<>();
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private int constantIndex;
 
-    KeywordInstanceAccumulator(KeywordContainer defaultContainer, Keyword defaultKeyword) {
-        this.rootKeyword = new KeywordWithSubKeywords(defaultContainer);
+    public KeywordInstanceAccumulator(KeywordContainer defaultContainer, Keyword defaultKeyword) {
+        this.rootKeyword = new ContainerQueryNode(defaultContainer);
         this.defaultKeyword = defaultKeyword;
         this.kind = defaultContainer.getKind();
     }
 
-    List<String> getWords() {
+    public List<String> getWords() {
         return words;
     }
 
-    List<Keyword> getKeywordAdepts() {
+    public List<Keyword> getKeywordAdepts() {
         return keywordAdepts;
     }
 
-    Integer getConstantIndexAndIncrement(Keyword keyword) {
-        if (keyword instanceof FilterKeyword && ((FilterKeyword)keyword).isRequiresArgument()) {
-            return constantIndex++;
-        } else {
-            return null;
-        }
-    }
-
-    void addKeywordAdept(Keyword keyword) {
+    public void addKeywordAdept(Keyword keyword) {
         if (keywordAdepts.isEmpty() || !keywordAdepts.getLast().getType().equals(keyword.getType())) {
             keywordAdepts.add(keyword);
         } else {
@@ -61,7 +53,7 @@ class KeywordInstanceAccumulator {
         }
     }
 
-    void clear(String constantPart) {
+    public void clear(String constantPart) {
         final Iterator<String> it = words.descendingIterator();
         int counter = constantPart.length();
         while (it.hasNext()) {
@@ -76,20 +68,20 @@ class KeywordInstanceAccumulator {
         }
     }
 
-    void clearKeywordAdepts() {
+    public void clearKeywordAdepts() {
         this.keywordAdepts.clear();
     }
 
-    void addWord(String constant) {
+    public void addWord(String constant) {
         this.words.add(constant);
     }
 
-    String popConstant(String keywordName) {
+    public String popConstant(String keywordName) {
         clear(keywordName);
         return popConstant();
     }
 
-    KeywordInstance getFinalKeyword() {
+    public QueryNode getFinalKeyword() {
         if (this.rootKeyword.getSubKeywords().isEmpty()) {
             return null;
         } else if (this.rootKeyword.getSubKeywords().size() == 1) {
@@ -99,36 +91,36 @@ class KeywordInstanceAccumulator {
         }
     }
 
-    void addKeywordContainerInstanceWithChild(KeywordContainer keywordContainer, Keyword keyword, String constant) {
-        KeywordWithSubKeywords containerInstance = new KeywordWithSubKeywords(keywordContainer);
-        containerInstance.addSubKeyword(new KeywordWithConstant(keyword, constant, getConstantIndexAndIncrement(keyword)));
+    public void addKeywordContainerInstanceWithChild(KeywordContainer keywordContainer, Keyword keyword, String constant) {
+        ContainerQueryNode containerInstance = new ContainerQueryNode(keywordContainer);
+        containerInstance.addSubKeyword(new LeafQueryNode(keyword, constant, getConstantIndexAndIncrement(keyword)));
         addKeywordInstance(containerInstance);
     }
 
-    void addKeywordContainerInstance(KeywordContainer keywordContainer) {
+    public void addKeywordContainerInstance(KeywordContainer keywordContainer) {
         addKeywordInstance(
-                new KeywordWithSubKeywords(keywordContainer)
+                new ContainerQueryNode(keywordContainer)
         );
     }
 
-    void addKeywordInstance(Keyword keyword, String constant) {
+    public void addKeywordInstance(Keyword keyword, String constant) {
         addKeywordInstance(
-                new KeywordWithConstant(keyword, constant, getConstantIndexAndIncrement(keyword))
+                new LeafQueryNode(keyword, constant, getConstantIndexAndIncrement(keyword))
         );
     }
 
-    void addKeywordInstance(String constant) {
+    public void addKeywordInstance(String constant) {
         addKeywordInstance(
-                new KeywordWithConstant(defaultKeyword, constant, getConstantIndexAndIncrement(defaultKeyword))
+                new LeafQueryNode(defaultKeyword, constant, getConstantIndexAndIncrement(defaultKeyword))
         );
     }
 
-    private void addKeywordInstance(KeywordWithConstant keywordInstance) {
+    private void addKeywordInstance(LeafQueryNode keywordInstance) {
         clear(keywordInstance.getConstant());
         this.rootKeyword.addSubKeyword(keywordInstance);
     }
 
-    private void addKeywordInstance(KeywordWithSubKeywords keywordInstance) {
+    private void addKeywordInstance(ContainerQueryNode keywordInstance) {
 
         if (keywordInstance.getKeyword() instanceof FilterKeywordContainer &&
                 ((FilterKeywordContainer) keywordInstance.getKeyword()).affectsNextKeyword()) {
@@ -149,6 +141,14 @@ class KeywordInstanceAccumulator {
     private String popConstant() {
         final String constant = StringUtils.join(this.words, null);
         return StringUtils.uncapitalize(constant);
+    }
+
+    private Integer getConstantIndexAndIncrement(Keyword keyword) {
+        if (keyword instanceof FilterKeyword && ((FilterKeyword) keyword).isRequiresArgument()) {
+            return constantIndex++;
+        } else {
+            return null;
+        }
     }
 
 }

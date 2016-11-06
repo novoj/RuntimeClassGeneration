@@ -1,6 +1,6 @@
-package cz.novoj.generation.contract.dao.keyword.sort;
+package cz.novoj.generation.contract.dao.query.keyword.sort;
 
-import cz.novoj.generation.contract.dao.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 
 /**
  * Created by Rodina Novotnych on 05.11.2016.

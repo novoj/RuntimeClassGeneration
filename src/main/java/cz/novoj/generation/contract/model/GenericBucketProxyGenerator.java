@@ -1,6 +1,5 @@
 package cz.novoj.generation.contract.model;
 
-import cz.novoj.generation.contract.model.dto.GenericBucket;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDeserializationProxyFactory;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;

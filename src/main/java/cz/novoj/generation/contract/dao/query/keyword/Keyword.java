@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.dao.keyword;
+package cz.novoj.generation.contract.dao.query.keyword;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,10 +1,10 @@
 package cz.novoj.generation.contract.model;
 
 import cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeyword;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

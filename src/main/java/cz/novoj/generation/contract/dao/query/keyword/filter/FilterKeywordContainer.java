@@ -1,7 +1,7 @@
-package cz.novoj.generation.contract.dao.keyword.filter;
+package cz.novoj.generation.contract.dao.query.keyword.filter;
 
-import cz.novoj.generation.contract.dao.keyword.Keyword;
-import cz.novoj.generation.contract.dao.keyword.KeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
 
 /**
  * Created by Rodina Novotnych on 05.11.2016.

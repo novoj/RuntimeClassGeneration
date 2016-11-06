@@ -13,10 +13,10 @@ import java.util.function.BiConsumer;
  * Created by Rodina Novotnych on 02.11.2016.
  */
 @Data
-public class AddMethodExecutor {
+public class AddDaoMethodExecutor {
     private final List<BiConsumer<PropertyAccessor, Object[]>> populators;
 
-    public AddMethodExecutor(Method method) {
+    public AddDaoMethodExecutor(Method method) {
         populators = new LinkedList<>();
         final String[] parameterNames = ReflectionUtils.getParameterNames(method);
         for (int i = 0; i < parameterNames.length; i++) {

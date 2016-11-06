@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.dao.keyword;
+package cz.novoj.generation.contract.dao.query.keyword;
 
 /**
  * Created by Rodina Novotnych on 05.11.2016.

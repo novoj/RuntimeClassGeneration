@@ -1,6 +1,6 @@
-package cz.novoj.generation.contract.dao.keyword.filter;
+package cz.novoj.generation.contract.dao.query.keyword.filter;
 
-import cz.novoj.generation.contract.dao.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import lombok.Getter;
 
 /**

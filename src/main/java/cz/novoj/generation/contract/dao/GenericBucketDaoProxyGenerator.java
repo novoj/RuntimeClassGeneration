@@ -1,9 +1,8 @@
 package cz.novoj.generation.contract.dao;
 
-import cz.novoj.generation.contract.dao.executor.AddMethodExecutor;
-import cz.novoj.generation.contract.dao.executor.GetMethodExecutor;
-import cz.novoj.generation.contract.dao.executor.RemoveMethodExecutor;
-import cz.novoj.generation.contract.dao.repository.GenericBucketRepository;
+import cz.novoj.generation.contract.dao.executor.AddDaoMethodExecutor;
+import cz.novoj.generation.contract.dao.executor.GetDaoMethodExecutor;
+import cz.novoj.generation.contract.dao.executor.RemoveDaoMethodExecutor;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
@@ -21,16 +20,16 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassifica
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public interface DaoProxyGenerator {
+public interface GenericBucketDaoProxyGenerator {
     String ADD = "add";
     String GET = "get";
     String REMOVE = "remove";
 
-    static <T extends PropertyAccessor> MethodClassification<AddMethodExecutor, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
+    static <T extends PropertyAccessor> MethodClassification<AddDaoMethodExecutor, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
         return new MethodClassification<>(
         /* matcher */       method -> ADD.equals(method.getName()) && (method.getParameterCount() > 1 ||
                 (method.getParameterCount() == 1 && !itemClass.isAssignableFrom(method.getParameterTypes()[0]))),
-        /* methodContext */ AddMethodExecutor::new,
+        /* methodContext */ AddDaoMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
             T item = methodContext.populate(proxy.createNew(), args);
             proxyState.add(item);
@@ -49,17 +48,17 @@ public interface DaoProxyGenerator {
         });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<GetMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> getInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<GetDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> getInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET),
-        /* methodContext */ GetMethodExecutor::new,
+        /* methodContext */ GetDaoMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
-    static <T extends PropertyAccessor> MethodClassification<RemoveMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> removeInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<RemoveDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> removeInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(REMOVE),
-        /* methodContext */ RemoveMethodExecutor::new,
+        /* methodContext */ RemoveDaoMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 

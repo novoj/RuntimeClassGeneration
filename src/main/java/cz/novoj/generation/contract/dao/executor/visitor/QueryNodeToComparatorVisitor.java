@@ -1,11 +1,11 @@
-package cz.novoj.generation.contract.dao.executor.helper;
+package cz.novoj.generation.contract.dao.executor.visitor;
 
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordInstance;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordInstanceVisitor;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithConstant;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithSubKeywords;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeyword;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeywordContainer;
+import cz.novoj.generation.contract.dao.query.instance.ContainerQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.LeafQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.QueryNode;
+import cz.novoj.generation.contract.dao.query.instance.QueryNodeVisitor;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import lombok.Data;
 import lombok.Getter;
@@ -18,29 +18,29 @@ import java.util.function.Consumer;
 /**
  * Created by Rodina Novotnych on 06.11.2016.
  */
-public class KeywordInstanceToComparatorVisitor<U extends PropertyAccessor> implements KeywordInstanceVisitor {
+public class QueryNodeToComparatorVisitor<U extends PropertyAccessor> implements QueryNodeVisitor {
     @Getter private Comparator<U> comparator;
     private Stack<Consumer<Comparator<U>>> comparatorConsumer = new Stack<>();
 
-    public KeywordInstanceToComparatorVisitor() {
-        comparatorConsumer.push(p -> KeywordInstanceToComparatorVisitor.this.comparator = p);
+    public QueryNodeToComparatorVisitor() {
+        comparatorConsumer.push(p -> QueryNodeToComparatorVisitor.this.comparator = p);
     }
 
     @Override
-    public void accept(KeywordWithConstant keywordInstance) {
+    public void accept(LeafQueryNode keywordInstance) {
         comparatorConsumer.peek().accept((o1, o2) -> PropertyAccessor.compare(
             (SortKeyword) keywordInstance.getKeyword(), o1, o2, keywordInstance.getConstant()
         ));
     }
 
     @Override
-    public void accept(KeywordWithSubKeywords keywordInstance) {
+    public void accept(ContainerQueryNode keywordInstance) {
 
         ContainerComparatorConsumer<U> subKeywordPredicateConsumer =
                 new ContainerComparatorConsumer<>((SortKeywordContainer) keywordInstance.getKeyword());
 
         comparatorConsumer.push(subKeywordPredicateConsumer);
-        for (KeywordInstance ki : keywordInstance.getSubKeywords()) {
+        for (QueryNode ki : keywordInstance.getSubKeywords()) {
             ki.visit(this);
         }
         comparatorConsumer.pop();

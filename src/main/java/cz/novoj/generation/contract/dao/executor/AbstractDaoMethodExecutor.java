@@ -1,13 +1,13 @@
 package cz.novoj.generation.contract.dao.executor;
 
-import cz.novoj.generation.contract.dao.DaoProxyGenerator;
+import cz.novoj.generation.contract.dao.GenericBucketDaoProxyGenerator;
+import cz.novoj.generation.contract.dao.GenericBucketRepository;
+import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
 import cz.novoj.generation.contract.dao.executor.helper.KeywordsInstanceCollector;
-import cz.novoj.generation.contract.dao.executor.helper.MethodQuery;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeyword;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeywordContainer;
-import cz.novoj.generation.contract.dao.repository.GenericBucketRepository;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import org.apache.commons.lang.StringUtils;
 
@@ -26,11 +26,11 @@ import static java.util.Optional.ofNullable;
 /**
  * Created by Rodina Novotnych on 06.11.2016.
  */
-abstract class AbstractMethodExecutor<T extends PropertyAccessor> implements MethodExecutor<GenericBucketRepository<T>> {
+abstract class AbstractDaoMethodExecutor<T extends PropertyAccessor> implements DaoMethodExecutor<GenericBucketRepository<T>> {
 
-    static MethodQuery getKeywordInstances(String methodName) {
+    static DaoMethodQuery getKeywordInstances(String methodName) {
         return Arrays
-                .stream(StringUtils.splitByCharacterTypeCamelCase(methodName.substring(DaoProxyGenerator.GET.length())))
+                .stream(StringUtils.splitByCharacterTypeCamelCase(methodName.substring(GenericBucketDaoProxyGenerator.GET.length())))
                 .collect(
                         new KeywordsInstanceCollector(
                                 FilterKeywordContainer.And, FilterKeyword.Eq,

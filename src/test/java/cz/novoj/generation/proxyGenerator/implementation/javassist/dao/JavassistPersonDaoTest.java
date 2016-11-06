@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.javassist.dao;
 
-import cz.novoj.generation.contract.dao.DaoProxyGenerator;
+import cz.novoj.generation.contract.dao.GenericBucketDaoProxyGenerator;
 import cz.novoj.generation.dao.PersonDao;
 import cz.novoj.generation.model.composite.CustomizedPerson;
 import lombok.extern.apachecommons.CommonsLog;
@@ -25,7 +25,7 @@ public class JavassistPersonDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        personDao = DaoProxyGenerator.instantiateJavassistProxy(PersonDao.class, CustomizedPerson.class);
+        personDao = GenericBucketDaoProxyGenerator.instantiateJavassistProxy(PersonDao.class, CustomizedPerson.class);
 
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (java.io.InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {

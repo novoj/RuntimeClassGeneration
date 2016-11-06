@@ -1,11 +1,12 @@
-package cz.novoj.generation.contract.dao.executor.helper;
+package cz.novoj.generation.contract.dao.executor.visitor;
 
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordInstance;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordInstanceVisitor;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithConstant;
-import cz.novoj.generation.contract.dao.keyword.instance.KeywordWithSubKeywords;
+import cz.novoj.generation.contract.dao.executor.dto.RepositoryItemWithMethodArgs;
+import cz.novoj.generation.contract.dao.query.instance.ContainerQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.LeafQueryNode;
+import cz.novoj.generation.contract.dao.query.instance.QueryNode;
+import cz.novoj.generation.contract.dao.query.instance.QueryNodeVisitor;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import lombok.Data;
 import lombok.Getter;
@@ -20,18 +21,18 @@ import java.util.function.Predicate;
 /**
  * Created by Rodina Novotnych on 06.11.2016.
  */
-public class KeywordInstanceToPredicateVisitor<U extends PropertyAccessor> implements KeywordInstanceVisitor {
+public class QueryNodeToPredicateVisitor<U extends PropertyAccessor> implements QueryNodeVisitor {
     private final Method method;
     @Getter private Predicate<RepositoryItemWithMethodArgs<U>> predicate;
     private Stack<Consumer<Predicate<RepositoryItemWithMethodArgs<U>>>> predicateConsumer = new Stack<>();
 
-    public KeywordInstanceToPredicateVisitor(Method method) {
+    public QueryNodeToPredicateVisitor(Method method) {
         this.method = method;
-        predicateConsumer.push(p -> KeywordInstanceToPredicateVisitor.this.predicate = p);
+        predicateConsumer.push(p -> QueryNodeToPredicateVisitor.this.predicate = p);
     }
 
     @Override
-    public void accept(KeywordWithConstant keywordInstance) {
+    public void accept(LeafQueryNode keywordInstance) {
         predicateConsumer.peek().accept(riwma -> {
             final U item = riwma.getRepositoryItem();
             final Object argument = Optional.ofNullable(keywordInstance.getIndex())
@@ -56,14 +57,14 @@ public class KeywordInstanceToPredicateVisitor<U extends PropertyAccessor> imple
     }
 
     @Override
-    public void accept(KeywordWithSubKeywords keywordInstance) {
+    public void accept(ContainerQueryNode keywordInstance) {
 
         ContainerPredicateConsumer<U> subKeywordPredicateConsumer =
                 new ContainerPredicateConsumer<>((FilterKeywordContainer) keywordInstance.getKeyword());
 
 
         predicateConsumer.push(subKeywordPredicateConsumer);
-        for (KeywordInstance ki : keywordInstance.getSubKeywords()) {
+        for (QueryNode ki : keywordInstance.getSubKeywords()) {
             ki.visit(this);
         }
         predicateConsumer.pop();

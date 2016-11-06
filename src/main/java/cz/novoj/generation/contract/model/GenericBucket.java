@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.model.dto;
+package cz.novoj.generation.contract.model;
 
 import java.util.HashMap;
 

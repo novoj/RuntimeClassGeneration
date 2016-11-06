@@ -1,11 +1,14 @@
 package cz.novoj.generation.contract.dao.executor.helper;
 
-import cz.novoj.generation.contract.dao.keyword.Keyword;
-import cz.novoj.generation.contract.dao.keyword.KeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeyword;
-import cz.novoj.generation.contract.dao.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeyword;
-import cz.novoj.generation.contract.dao.keyword.sort.SortKeywordContainer;
+import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
+import cz.novoj.generation.contract.dao.executor.dto.KeywordInstanceAccumulator;
+import cz.novoj.generation.contract.dao.executor.dto.QueryAccumulator;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
+import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -19,7 +22,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Created by Rodina Novotnych on 05.11.2016.
  */
-public class KeywordsInstanceCollector implements Collector<String, QueryAccumulator, MethodQuery> {
+public class KeywordsInstanceCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
     private final EnumMap<Keyword.Kind, String> kindPrefixes = new EnumMap<>(Keyword.Kind.class);
     private final FilterKeywordContainer defaultFilterContainer;
     private final FilterKeyword defaultFilterKeyword;
@@ -86,7 +89,7 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
     }
 
     @Override
-    public Function<QueryAccumulator, MethodQuery> finisher() {
+    public Function<QueryAccumulator, DaoMethodQuery> finisher() {
         return acc -> {
             Optional<KeywordInstanceAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
             activeAcc.ifPresent(aacc -> {
@@ -95,7 +98,7 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
                 }
             });
 
-            return new MethodQuery(
+            return new DaoMethodQuery(
                 acc.getAccumulators()
             );
         };
