@@ -25,7 +25,7 @@ public class ByteBuddyPersonDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        personDao = DaoProxyGenerator.instantiateByteBuddyProxy(PersonDao.class);
+        personDao = DaoProxyGenerator.instantiateByteBuddyProxy(PersonDao.class, CustomizedPerson.class);
 
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (java.io.InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {

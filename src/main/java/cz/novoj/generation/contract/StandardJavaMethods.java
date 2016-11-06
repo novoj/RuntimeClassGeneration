@@ -8,9 +8,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.Function;
 
 import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.NO_CONTEXT;
 
 /**
  * No documentation needed, just look at the methods.
@@ -18,7 +18,6 @@ import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.i
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 public interface StandardJavaMethods {
-    Function<Method, Void> NO_CONTEXT = method -> null;
 
     static MethodClassification defaultMethodInvoker() {
         return new MethodClassification<>(
@@ -50,7 +49,7 @@ public interface StandardJavaMethods {
     static MethodClassification<Void, Object, Proxy> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
-        /* methodContext */ method -> null,
+        /* methodContext */ NO_CONTEXT,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.toString()
         );
     }
@@ -58,7 +57,7 @@ public interface StandardJavaMethods {
     static MethodClassification<Void, Object, Proxy> hashCodeMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
-        /* methodContext */ method -> null,
+        /* methodContext */ NO_CONTEXT,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.hashCode()
         );
     }
@@ -66,7 +65,7 @@ public interface StandardJavaMethods {
     static MethodClassification<Void, Object, Proxy> equalsMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
-        /* methodContext */ method -> null,
+        /* methodContext */ NO_CONTEXT,
         /* invocation */    (proxy, method, args, methodContext, proxyState) ->
                                         proxy.getClass().equals(args[0].getClass()) &&
                                         proxyState.equals(((Proxy)args[0]).getProxyState())

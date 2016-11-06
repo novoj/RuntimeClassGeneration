@@ -14,6 +14,8 @@ import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenera
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
+import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.NO_CONTEXT;
+
 /**
  * No documentation needed, just look at the methods.
  *
@@ -23,23 +25,26 @@ public interface DaoProxyGenerator {
     String ADD = "add";
     String GET = "get";
     String REMOVE = "remove";
-    String GET_ALL = "getAll";
 
-    static <T extends PropertyAccessor> MethodClassification<Void, GenericBucketRepository<T>, Dao<T>> getAllInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<AddMethodExecutor, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
         return new MethodClassification<>(
-        /* matcher */       method -> GET_ALL.equals(method.getName()) && method.getParameterCount() == 0,
-        /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.getData()
-        );
-    }
-
-    static <T extends PropertyAccessor> MethodClassification<AddMethodExecutor, GenericBucketRepository<T>, Dao<T>> addInvoker() {
-        return new MethodClassification<>(
-        /* matcher */       method -> ADD.equals(method.getName()),
+        /* matcher */       method -> ADD.equals(method.getName()) && (method.getParameterCount() > 1 ||
+                (method.getParameterCount() == 1 && !itemClass.isAssignableFrom(method.getParameterTypes()[0]))),
         /* methodContext */ AddMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
             T item = methodContext.populate(proxy.createNew(), args);
             proxyState.add(item);
+            return null;
+        });
+    }
+
+    static <T extends PropertyAccessor> MethodClassification<Void, GenericBucketRepository<T>, Dao<T>> addProxyInvoker(Class<T> itemClass) {
+        return new MethodClassification<>(
+        /* matcher */       method -> ADD.equals(method.getName()) &&
+                (method.getParameterCount() == 1 && itemClass.isAssignableFrom(method.getParameterTypes()[0])),
+        /* methodContext */ NO_CONTEXT,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+            proxyState.add((T) args[0]);
             return null;
         });
     }
@@ -58,41 +63,41 @@ public interface DaoProxyGenerator {
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
-    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJdkProxy(Class<T> contract) {
+    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJdkProxy(Class<T> daoClass, Class<S> itemClass) {
         return JdkProxyGenerator.instantiate(
                 new JdkProxyDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
-                        getAllInvoker(),
                         getInvoker(),
-                        addInvoker(),
+                        addInvoker(itemClass),
+                        addProxyInvoker(itemClass),
                         removeInvoker()
                 ),
-                contract, SerializableProxy.class
+                daoClass, SerializableProxy.class
         );
     }
 
-    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJavassistProxy(Class<T> contract) {
+    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJavassistProxy(Class<T> daoClass, Class<S> itemClass) {
         return JavassistProxyGenerator.instantiate(
                 new JavassistDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
-                        getAllInvoker(),
                         getInvoker(),
-                        addInvoker(),
+                        addInvoker(itemClass),
+                        addProxyInvoker(itemClass),
                         removeInvoker()
                 ),
-                contract, SerializableProxy.class);
+                daoClass, SerializableProxy.class);
     }
 
-    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateByteBuddyProxy(Class<T> contract) {
+    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateByteBuddyProxy(Class<T> daoClass, Class<S> itemClass) {
         return ByteBuddyProxyGenerator.instantiate(
                 new ByteBuddyDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
-                        getAllInvoker(),
                         getInvoker(),
-                        addInvoker(),
+                        addInvoker(itemClass),
+                        addProxyInvoker(itemClass),
                         removeInvoker()
                 ),
-                contract, SerializableProxy.class);
+                daoClass, SerializableProxy.class);
     }
 
 }

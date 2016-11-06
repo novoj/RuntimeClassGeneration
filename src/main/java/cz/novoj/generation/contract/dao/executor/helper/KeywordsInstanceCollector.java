@@ -88,10 +88,13 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
     @Override
     public Function<QueryAccumulator, MethodQuery> finisher() {
         return acc -> {
-            KeywordInstanceAccumulator activeAcc = acc.getActiveAccumulator();
-            if (!activeAcc.getWords().isEmpty()) {
-                registerKeywordInstance(activeAcc, activeAcc.getKeywordAdepts());
-            }
+            Optional<KeywordInstanceAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
+            activeAcc.ifPresent(aacc -> {
+                if (!aacc.getWords().isEmpty()) {
+                    registerKeywordInstance(aacc, aacc.getKeywordAdepts());
+                }
+            });
+
             return new MethodQuery(
                 acc.getAccumulators()
             );

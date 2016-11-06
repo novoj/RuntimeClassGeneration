@@ -8,14 +8,12 @@ import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * No documentation needed, just look at the methods.
@@ -24,8 +22,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @CommonsLog
 public final class ByteBuddyProxyGenerator {
+    public static final String INVOCATION_HANDLER_FIELD = "dispatcherInvocationHandler";
     private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
     private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
+    private static final Method hashCode;
+    private static final Method equals;
+    private static final Method toString;
+    private static AtomicInteger classCounter = new AtomicInteger(0);
+
+    static {
+        try {
+            toString = Object.class.getMethod("toString");
+            hashCode = Object.class.getMethod("hashCode");
+            equals = Object.class.getMethod("equals", Object.class);
+        } catch (NoSuchMethodException e) {
+            //not expected
+            throw new RuntimeException(e);
+        }
+    }
 
     public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
@@ -56,19 +70,24 @@ public final class ByteBuddyProxyGenerator {
                     }
 
                     Class proxyClass = builder
-                            .defineField("dispatcherInvocationHandler", ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
+                            .name("cz.novoj.generation.model.proxy." + interfaces[0].getSimpleName() + "_" + classCounter.incrementAndGet())
+                            .defineField(INVOCATION_HANDLER_FIELD, ByteBuddyDispatcherInvocationHandler.class, Modifier.PRIVATE + Modifier.FINAL)
                             .defineConstructor(Modifier.PUBLIC)
                             .withParameter(ByteBuddyDispatcherInvocationHandler.class)
                             .intercept(
                                     MethodCall.invoke(getDefaultConstructor(superClass))
                                             .onSuper()
                                             .andThen(
-                                                    FieldAccessor.ofField("dispatcherInvocationHandler")
-                                                            .setsArgumentAt(0)
+                                                FieldAccessor.ofField(INVOCATION_HANDLER_FIELD).setsArgumentAt(0)
                                             )
                             )
-                            .method(ElementMatchers.isAbstract())
-                            .intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
+                            .method(
+                                    ElementMatchers.isAbstract()
+                                            .or(ElementMatchers.is(toString))
+                                            .or(ElementMatchers.is(hashCode))
+                                            .or(ElementMatchers.is(equals))
+                            )
+                            .intercept(InvocationHandlerAdapter.toField(INVOCATION_HANDLER_FIELD))
                             .make()
                             .load(ByteBuddyProxyGenerator.class.getClassLoader())
                             .getLoaded();

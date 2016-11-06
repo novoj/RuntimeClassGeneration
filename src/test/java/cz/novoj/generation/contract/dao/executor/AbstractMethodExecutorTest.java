@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Rodina Novotnych on 05.11.2016.
  */
-public class GetMethodExecutorTest {
+public class AbstractMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameAndLastName_returnsKeywordInstance() throws Exception {
