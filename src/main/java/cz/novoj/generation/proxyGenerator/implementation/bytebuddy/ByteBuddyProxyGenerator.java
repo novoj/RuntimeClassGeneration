@@ -67,7 +67,7 @@ public final class ByteBuddyProxyGenerator {
                                                             .setsArgumentAt(0)
                                             )
                             )
-                            .method(ElementMatchers.any())
+                            .method(ElementMatchers.isAbstract())
                             .intercept(InvocationHandlerAdapter.toField("dispatcherInvocationHandler"))
                             .make()
                             .load(ByteBuddyProxyGenerator.class.getClassLoader())

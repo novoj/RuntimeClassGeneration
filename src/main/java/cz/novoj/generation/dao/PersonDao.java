@@ -59,4 +59,8 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
 
     public abstract List<CustomizedPerson> getByFirstNameInSortedByAgeDesc(String... firstNames);
 
+    public abstract int removeByAge(int age);
+
+    public abstract List<CustomizedPerson> removeAllByAge(int age);
+
 }

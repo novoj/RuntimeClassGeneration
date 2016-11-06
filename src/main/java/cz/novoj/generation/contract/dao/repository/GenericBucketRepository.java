@@ -10,10 +10,14 @@ import java.util.List;
  * Created by Rodina Novotnych on 02.11.2016.
  */
 public class GenericBucketRepository<T extends PropertyAccessor> {
-    @Getter private final List<T> data = new LinkedList<T>();
+    @Getter private List<T> data = new LinkedList<>();
 
     public void add(T item) {
         data.add(item);
+    }
+
+    public void resetDataTo(List<T> newData) {
+        this.data = newData;
     }
 
 }

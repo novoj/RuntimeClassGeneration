@@ -2,6 +2,7 @@ package cz.novoj.generation.contract.dao;
 
 import cz.novoj.generation.contract.dao.executor.AddMethodExecutor;
 import cz.novoj.generation.contract.dao.executor.GetMethodExecutor;
+import cz.novoj.generation.contract.dao.executor.RemoveMethodExecutor;
 import cz.novoj.generation.contract.dao.repository.GenericBucketRepository;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
@@ -21,6 +22,7 @@ import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 public interface DaoProxyGenerator {
     String ADD = "add";
     String GET = "get";
+    String REMOVE = "remove";
     String GET_ALL = "getAll";
 
     static <T extends PropertyAccessor> MethodClassification<Void, GenericBucketRepository<T>, Dao<T>> getAllInvoker() {
@@ -42,10 +44,17 @@ public interface DaoProxyGenerator {
         });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<GetMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> getByInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<GetMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> getInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET),
         /* methodContext */ GetMethodExecutor::new,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
+    }
+
+    static <T extends PropertyAccessor> MethodClassification<RemoveMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> removeInvoker() {
+        return new MethodClassification<>(
+        /* matcher */       method -> method.getName().startsWith(REMOVE),
+        /* methodContext */ RemoveMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
@@ -54,8 +63,9 @@ public interface DaoProxyGenerator {
                 new JdkProxyDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
                         getAllInvoker(),
-                        getByInvoker(),
-                        addInvoker()
+                        getInvoker(),
+                        addInvoker(),
+                        removeInvoker()
                 ),
                 contract, SerializableProxy.class
         );
@@ -66,8 +76,9 @@ public interface DaoProxyGenerator {
                 new JavassistDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
                         getAllInvoker(),
-                        getByInvoker(),
-                        addInvoker()
+                        getInvoker(),
+                        addInvoker(),
+                        removeInvoker()
                 ),
                 contract, SerializableProxy.class);
     }
@@ -77,8 +88,9 @@ public interface DaoProxyGenerator {
                 new ByteBuddyDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
                         getAllInvoker(),
-                        getByInvoker(),
-                        addInvoker()
+                        getInvoker(),
+                        addInvoker(),
+                        removeInvoker()
                 ),
                 contract, SerializableProxy.class);
     }

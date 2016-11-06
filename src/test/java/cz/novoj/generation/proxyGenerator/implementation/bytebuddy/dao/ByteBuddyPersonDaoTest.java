@@ -1,4 +1,4 @@
-package cz.novoj.generation.proxyGenerator.implementation.javassist;
+package cz.novoj.generation.proxyGenerator.implementation.bytebuddy.dao;
 
 import cz.novoj.generation.contract.dao.DaoProxyGenerator;
 import cz.novoj.generation.dao.PersonDao;
@@ -20,12 +20,12 @@ import static org.junit.Assert.*;
  * Created by Rodina Novotnych on 02.11.2016.
  */
 @CommonsLog
-public class JavassistPersonDaoTest {
+public class ByteBuddyPersonDaoTest {
     private PersonDao personDao;
 
     @Before
     public void setUp() throws Exception {
-        personDao = DaoProxyGenerator.instantiateJavassistProxy(PersonDao.class);
+        personDao = DaoProxyGenerator.instantiateByteBuddyProxy(PersonDao.class);
 
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (java.io.InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {
@@ -114,4 +114,21 @@ public class JavassistPersonDaoTest {
             assertTrue(previousAge > person.getAge());
         }
     }
+
+    @Test
+    public void PersonDao_removeByAge_removesItemsFromCollectionsAndReturnsNumberOfRemovedItems() throws Exception {
+        int removedCount = personDao.removeByAge(0);
+
+        assertEquals(494, removedCount);
+        assertEquals(500 - removedCount, personDao.getAll().size());
+    }
+
+    @Test
+    public void PersonDao_removeAllByAge_removesItemsFromCollectionsAndReturnsRemovedItems() throws Exception {
+        List<CustomizedPerson> removedPersons = personDao.removeAllByAge(0);
+
+        assertEquals(494, removedPersons.size());
+        assertEquals(500 - removedPersons.size(), personDao.getAll().size());
+    }
+
 }
