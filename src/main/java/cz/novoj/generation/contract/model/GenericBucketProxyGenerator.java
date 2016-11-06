@@ -13,6 +13,7 @@ import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenera
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
+import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
@@ -45,7 +46,7 @@ public interface GenericBucketProxyGenerator {
 
     static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(GET_PROPERTIES)),
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTIES),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
         );
@@ -53,7 +54,7 @@ public interface GenericBucketProxyGenerator {
 
     static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertyInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(GET_PROPERTY, String.class)),
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
         );
@@ -61,7 +62,7 @@ public interface GenericBucketProxyGenerator {
 
     static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(PropertyAccessor.class.getDeclaredMethod(SET_PROPERTY, String.class, Object.class)),
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, SET_PROPERTY, String.class, Object.class),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(String.valueOf(args[0]), args[1])
         );

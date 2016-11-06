@@ -1,7 +1,7 @@
 package cz.novoj.generation.contract.dao;
 
 import cz.novoj.generation.contract.dao.dto.GenericBucketRepository;
-import cz.novoj.generation.contract.dao.helper.GetMethodDecomposition;
+import cz.novoj.generation.contract.dao.helper.MethodNameDecomposition;
 import cz.novoj.generation.contract.dao.helper.PropertyPopulator;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
@@ -43,10 +43,10 @@ public interface DaoProxyGenerator {
         });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<GetMethodDecomposition<T>, GenericBucketRepository<T>, Dao<T>> getByInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<MethodNameDecomposition<T>, GenericBucketRepository<T>, Dao<T>> getByInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET_BY),
-        /* methodContext */ GetMethodDecomposition::new,
+        /* methodContext */ MethodNameDecomposition::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 

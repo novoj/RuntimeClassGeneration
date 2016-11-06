@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
+import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+
 /**
  * No documentation needed, just look at the methods.
  *
@@ -47,7 +49,7 @@ public interface StandardJavaMethods {
 
     static MethodClassification<Void, Object, Proxy> toStringMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("toString")),
+        /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.toString()
         );
@@ -55,7 +57,7 @@ public interface StandardJavaMethods {
 
     static MethodClassification<Void, Object, Proxy> hashCodeMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("hashCode")),
+        /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.hashCode()
         );
@@ -63,7 +65,7 @@ public interface StandardJavaMethods {
 
     static MethodClassification<Void, Object, Proxy> equalsMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(Object.class.getDeclaredMethod("equals", Object.class)),
+        /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) ->
                                         proxy.getClass().equals(args[0].getClass()) &&

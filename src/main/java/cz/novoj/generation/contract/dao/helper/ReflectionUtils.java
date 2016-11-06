@@ -62,4 +62,14 @@ public interface ReflectionUtils {
             throw new RuntimeException("Class introspection unexpectedly failed.", ex);
         }
     }
+
+    static boolean isMethodDeclaredOn(Method method, Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+        try {
+            return method.equals(clazz.getMethod(methodName, parameterTypes));
+        } catch (Exception ex) {
+            throw new IllegalStateException(
+                "Matcher " + clazz.getName() + " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
+            );
+        }
+    }
 }

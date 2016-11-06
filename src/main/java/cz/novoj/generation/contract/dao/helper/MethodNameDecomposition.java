@@ -20,13 +20,13 @@ import static java.util.Optional.ofNullable;
 /**
  * Created by Rodina Novotnych on 05.11.2016.
  */
-public class GetMethodDecomposition<T extends PropertyAccessor> {
+public class MethodNameDecomposition<T extends PropertyAccessor> {
 
     private final Optional<Predicate<RepositoryItemWithMethodArgs<T>>> filterPredicate;
     private final Optional<Comparator<T>> orderComparator;
     private final BiFunction<Stream<T>, Object[], ?> resultTransformer;
 
-    public GetMethodDecomposition(Method method) {
+    public MethodNameDecomposition(Method method) {
         final KeywordInstance keywords = getKeywordInstances(method.getName());
 
         this.filterPredicate = ofNullable(keywords).map(keywordInstance -> getFilterPredicate(method, keywordInstance));

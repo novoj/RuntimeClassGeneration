@@ -6,14 +6,14 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static cz.novoj.generation.contract.dao.helper.GetMethodDecomposition.getKeywordInstances;
+import static cz.novoj.generation.contract.dao.helper.MethodNameDecomposition.getKeywordInstances;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Rodina Novotnych on 05.11.2016.
  */
-public class GetMethodDecompositionTest {
+public class MethodNameDecompositionTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameAndLastName_returnsKeywordInstance() throws Exception {

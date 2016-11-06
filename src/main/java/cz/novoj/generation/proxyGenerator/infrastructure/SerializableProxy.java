@@ -6,6 +6,8 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.*;
 
+import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+
 /**
  * Created by Rodina Novotnych on 29.10.2016.
  */
@@ -22,7 +24,7 @@ public interface SerializableProxy extends Serializable {
 
     static <T> MethodClassification<Void, T, Proxy> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(SerializableProxy.class.getDeclaredMethod("writeReplace")),
+        /* matcher */       method -> isMethodDeclaredOn(method, SerializableProxy.class, "writeReplace"),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
             final Object state = proxy.getProxyState();

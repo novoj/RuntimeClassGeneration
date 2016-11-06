@@ -1,5 +1,7 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
+import static cz.novoj.generation.contract.dao.helper.ReflectionUtils.isMethodDeclaredOn;
+
 /**
  * Created by Rodina Novotnych on 28.10.2016.
  */
@@ -9,7 +11,7 @@ public interface Proxy {
 
     static MethodClassification<Void, Object, Proxy> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> method.equals(Proxy.class.getDeclaredMethod("getProxyState")),
+        /* matcher */       method -> isMethodDeclaredOn(method, Proxy.class, "getProxyState"),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
         );
