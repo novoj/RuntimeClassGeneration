@@ -8,7 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static junit.framework.TestCase.assertNull;
@@ -89,6 +91,27 @@ public class JavassistPersonDaoTest {
                     .orElse(-1);
             assertTrue("Comparation returned " + comparationResult, comparationResult <= 0);
             previousPerson = person;
+        }
+    }
+
+    @Test
+    public void PersonDao_getByFirstNameIsNullLastNameNotIsNull_returnsSortedList() throws Exception {
+        Optional<CustomizedPerson> personWithoutLastName = personDao.getByFirstNameIsNullAndLastNameIsNotNull();
+        assertFalse("Returned " + personWithoutLastName.orElse(null), personWithoutLastName.isPresent());
+    }
+
+    @Test
+    public void PersonDao_getByFirstNameInSortedByAgeDesc_returnsSortedList() throws Exception {
+        List<CustomizedPerson> personsWithSelectedFirstName = personDao.getByFirstNameInSortedByAgeDesc("Linus", "Brian");
+
+        assertEquals(3, personsWithSelectedFirstName.size());
+
+        int previousAge = Integer.MAX_VALUE;
+        for (CustomizedPerson person : personsWithSelectedFirstName) {
+            log.debug(person);
+
+            assertTrue(Arrays.asList("Linus", "Brian").contains(person.getFirstName()));
+            assertTrue(previousAge > person.getAge());
         }
     }
 }

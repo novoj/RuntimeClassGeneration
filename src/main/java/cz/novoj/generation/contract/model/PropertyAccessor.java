@@ -46,6 +46,7 @@ public interface PropertyAccessor {
 			case MoreThan: result = existingPropertyValue.map(o -> ((Comparable)o).compareTo(propertyValue) > 0).orElse(false); break;
 			case MoreThanEq: result = existingPropertyValue.map(o -> ((Comparable)o).compareTo(propertyValue) >= 0).orElse(false); break;
 			case IsNull: result = existingPropertyValue.map(o -> false).orElse(true); break;
+			case IsNotNull: result = existingPropertyValue.map(o -> true).orElse(false); break;
 			case In: {
 				if (propertyValue == null || !existingPropertyValue.isPresent()) {
 					result = false;
@@ -66,7 +67,7 @@ public interface PropertyAccessor {
 			default: result = false;
 		}
 
-		log.debug(existingPropertyValue.orElse(null) + " " + keyword.name() + " " + propertyValue + " = " + result);
+		// log.debug(existingPropertyValue.orElse(null) + " " + keyword.name() + " " + propertyValue + " = " + result);
 
 		return result;
 	}
@@ -81,13 +82,17 @@ public interface PropertyAccessor {
 	}
 
 	static <U extends PropertyAccessor> int compare(SortKeyword keyword, U item, U other, String propertyName) {
-        final Optional<Object> existingPropertyValue = ofNullable(
+        final Object thisPropertyValue = ofNullable(
                 ofNullable(item.getProperty(propertyName)).orElseGet(() -> ReflectionUtils.getProperty(item, propertyName))
-        );
+        ).orElseThrow(() -> new NullPointerException("Cannot compare - property " + propertyName + " is null on object " + item + "!"));
+
+        final Object otherPropertyValue = ofNullable(
+                ofNullable(other.getProperty(propertyName)).orElseGet(() -> ReflectionUtils.getProperty(other, propertyName))
+        ).orElseThrow(() -> new NullPointerException("Cannot compare - property " + propertyName + " is null on object " + other + "!"));
 
         switch (keyword) {
-            case Asc: return existingPropertyValue.map(o -> ((Comparable)o).compareTo(other.getProperty(propertyName))).orElse(0);
-            case Desc: return existingPropertyValue.map(o -> ((Comparable)o).compareTo(other.getProperty(propertyName)) * -1).orElse(0);
+            case Asc: return ((Comparable<Object>)thisPropertyValue).compareTo(otherPropertyValue);
+            case Desc: return ((Comparable<Object>)thisPropertyValue).compareTo(otherPropertyValue) * -1;
         }
 		return 0;
 	}

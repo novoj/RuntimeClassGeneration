@@ -15,6 +15,7 @@ public enum FilterKeyword implements Keyword {
     MoreThanEq(true),
     Contains(true),
     IsNull(false),
+    IsNotNull(false),
     In(true);
 
     @Getter

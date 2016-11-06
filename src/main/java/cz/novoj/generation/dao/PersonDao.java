@@ -34,7 +34,11 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
                     String firstName = cols[0];
                     String lastName = cols[1];
                     LocalDate birthDate = LocalDate.from(DateTimeFormatter.ISO_DATE.parse(cols[2]));
-                    add(firstName, lastName, birthDate);
+                    add(
+                        firstName.trim().isEmpty() ? null : firstName,
+                        lastName.trim().isEmpty() ? null : lastName,
+                        birthDate
+                    );
                 });
     }
 
@@ -51,7 +55,7 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
 
     public abstract List<CustomizedPerson> getByAgeLessThan(int age);
 
-    public abstract Optional<CustomizedPerson> getByLastNameIsNull();
+    public abstract Optional<CustomizedPerson> getByFirstNameIsNullAndLastNameIsNotNull();
 
     public abstract List<CustomizedPerson> getByFirstNameInSortedByAgeDesc(String... firstNames);
 
