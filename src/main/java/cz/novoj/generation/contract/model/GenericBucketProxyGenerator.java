@@ -1,10 +1,12 @@
 package cz.novoj.generation.contract.model;
 
-import cz.novoj.generation.model.Proxy;
-import org.apache.commons.lang.StringUtils;
+import cz.novoj.generation.model.traits.PropertyAccessor;
+import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
+import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
+import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
  * No documentation needed, just look at the methods.
@@ -13,38 +15,64 @@ import java.lang.reflect.Method;
  */
 public interface GenericBucketProxyGenerator {
 
-	static <T> T instantiate(Class<T> contract) {
-		return (T)java.lang.reflect.Proxy.newProxyInstance(
-				GenericBucketProxyGenerator.class.getClassLoader(), new Class[] {contract, Proxy.class},
-				new GenericBucketInvocationHandler()
+	String GET = "get";
+	String SET = "set";
+	String GET_PROPERTY = "getProperty";
+	String SET_PROPERTY = "setProperty";
+	String GET_PROPERTIES = "getProperties";
+
+	static MethodClassification<String, GenericBucket, PropertyAccessor> getterInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> method.getName().startsWith(GET) && method.getParameterCount() == 0,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(GET.length())),
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(methodContext)
 		);
 	}
 
-	class GenericBucketInvocationHandler implements InvocationHandler {
-		private final GenericBucket genericBucket = new GenericBucket(32);
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if (Proxy.class.getDeclaredMethod("getProxyState").equals(method)) {
-				return genericBucket;
-			} else if (method.getName().equals("getProperties")) {
-				return genericBucket;
-			} else if (method.getName().startsWith("get")) {
-				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				return genericBucket.get(propertyName);
-			} else if (method.getName().startsWith("set")) {
-				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				genericBucket.put(propertyName, args[0]);
-				return null;
-			} else if (Object.class.getDeclaredMethod("hashCode").equals(method)) {
-				return genericBucket.hashCode();
-			} else if (Object.class.getDeclaredMethod("toString").equals(method)) {
-				return genericBucket.toString();
-			} else if (Object.class.getDeclaredMethod("equals", Object.class).equals(method)) {
-				return proxy.getClass().equals(args[0].getClass()) &&
-						genericBucket.equals(((Proxy)args[0]).getProxyState());
-			}
-			throw new UnsupportedOperationException("Method " + method.toGenericString() + " is not supported right now!");
-		}
+	static MethodClassification<String, GenericBucket, PropertyAccessor> setterInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> method.getName().startsWith(SET) && method.getParameterCount() == 1,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(SET.length())),
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(methodContext, args[0])
+		);
 	}
+
+	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTIES),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+		);
+	}
+
+	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertyInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
+		);
+	}
+
+	static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, SET_PROPERTY, String.class, Object.class),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(String.valueOf(args[0]), args[1])
+		);
+	}
+
+	static <T> T instantiate(Class<T> contract) {
+		return JdkProxyGenerator.instantiate(
+				new JdkProxyDispatcherInvocationHandler<>(
+						new GenericBucket(64),
+						getPropertiesInvoker(),
+						getPropertyInvoker(),
+						setPropertyInvoker(),
+						getterInvoker(),
+						setterInvoker()
+				),
+				contract
+		);
+	}
+
 }
