@@ -23,6 +23,8 @@ public interface GenericBucketProxyGenerator {
 	class GenericBucketInvocationHandler implements InvocationHandler {
 		private final GenericBucket genericBucket = new GenericBucket(32);
 
+		// TODO POUZE ROZDĚLENÍ NA CLASS A NEW INSTANCE
+
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (Proxy.class.getDeclaredMethod("getProxyState").equals(method)) {
