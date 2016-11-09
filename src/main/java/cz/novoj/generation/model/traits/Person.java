@@ -5,7 +5,7 @@ package cz.novoj.generation.model.traits;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public interface Person {
+public interface Person extends PropertyAccessor {
 
 	String getFirstName();
 	void setFirstName(String firstName);
