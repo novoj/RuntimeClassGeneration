@@ -16,12 +16,15 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
+@SuppressWarnings("rawtypes")
 @CommonsLog
-public final class JdkProxyGenerator {
-    private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
-    private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
+public class JdkProxyGenerator {
+    private static final Map<List<Class>, Class> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
+    private static final Map<Class, Constructor> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 
-    public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
+	private JdkProxyGenerator() {}
+
+	public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
                 getProxyClass(interfaces),
                 invocationHandler
@@ -29,7 +32,7 @@ public final class JdkProxyGenerator {
     }
 
     private static Class getProxyClass(Class... contract) {
-        return cachedProxyClasses.computeIfAbsent(
+        return CACHED_PROXY_CLASSES.computeIfAbsent(
                 Arrays.asList(contract),
                 classes -> {
                     Class[] interfaces = new Class[contract.length + 1];
@@ -45,7 +48,7 @@ public final class JdkProxyGenerator {
     @SuppressWarnings("unchecked")
     private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
         try {
-            Constructor constructor = cachedProxyConstructors.computeIfAbsent(
+            Constructor constructor = CACHED_PROXY_CONSTRUCTORS.computeIfAbsent(
                     proxyClass, aClass -> {
                         try {
                             return proxyClass.getConstructor(InvocationHandler.class);
