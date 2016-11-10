@@ -2,6 +2,7 @@ package cz.novoj.generation.contract;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
+import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.*;
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
 
 /**
@@ -14,7 +15,7 @@ public interface Proxy {
     static MethodClassification<Void, Object, Proxy> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Proxy.class, "getProxyState"),
-        /* methodContext */ method -> null,
+        /* methodContext */ NO_CONTEXT,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
         );
     }

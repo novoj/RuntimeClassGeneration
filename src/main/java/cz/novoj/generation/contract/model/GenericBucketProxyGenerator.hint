@@ -21,48 +21,43 @@ public interface GenericBucketProxyGenerator {
 	String SET_PROPERTY = "setProperty";
 	String GET_PROPERTIES = "getProperties";
 
-	/** HANDLES: String getFirstName(); **/
 	static MethodClassification<String, GenericBucket, PropertyAccessor> getterInvoker() {
 		return new MethodClassification<>(
-        /* matcher */       method -> /* TODO */,
-        /* methodContext */ method -> /* TODO */,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */
+        /* matcher */       method -> method.getName().startsWith(GET) && method.getParameterCount() == 0,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(GET.length())),
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(methodContext)
 		);
 	}
 
-	/** HANDLES: void setFirstName(String firstName); **/
 	static MethodClassification<String, GenericBucket, PropertyAccessor> setterInvoker() {
 		return new MethodClassification<>(
-        /* matcher */       method -> /* TODO */,
-        /* methodContext */ method -> /* TODO */,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */
+        /* matcher */       method -> method.getName().startsWith(SET) && method.getParameterCount() == 1,
+        /* methodContext */ method -> uncapitalize(method.getName().substring(SET.length())),
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(methodContext, args[0])
 		);
 	}
 
-	/** HANDLES: Map<String, Object> getProperties(); **/
 	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
 		return new MethodClassification<>(
-        /* matcher */       method -> /* TODO */,
-        /* methodContext */ method -> /* TODO */,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTIES),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
 		);
 	}
 
-	/** HANDLES: Object getProperty(String name); **/
 	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertyInvoker() {
 		return new MethodClassification<>(
-        /* matcher */       method -> /* TODO */,
-        /* methodContext */ method -> /* TODO */,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
 		);
 	}
 
-	/** HANDLES: void setProperty(String name, Object value); **/
 	static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
 		return new MethodClassification<>(
-        /* matcher */       method -> /* TODO */,
-        /* methodContext */ method -> /* TODO */,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */
+        /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, SET_PROPERTY, String.class, Object.class),
+        /* methodContext */ method -> null,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(String.valueOf(args[0]), args[1])
 		);
 	}
 
