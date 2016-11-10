@@ -6,6 +6,8 @@ import cz.novoj.generation.contract.dao.executor.RemoveDaoMethodExecutor;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
+import cz.novoj.generation.proxyGenerator.implementation.cglib.CglibDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.implementation.cglib.CglibProxyGenerator;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistProxyGenerator;
 import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyDispatcherInvocationHandler;
@@ -78,6 +80,18 @@ public interface GenericBucketDaoProxyGenerator {
     static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJavassistProxy(Class<T> daoClass, Class<S> itemClass) {
         return JavassistProxyGenerator.instantiate(
                 new JavassistDispatcherInvocationHandler<>(
+                        new GenericBucketRepository<S>(),
+                        getInvoker(),
+                        addInvoker(itemClass),
+                        addProxyInvoker(itemClass),
+                        removeInvoker()
+                ),
+                daoClass, SerializableProxy.class);
+    }
+
+    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateCglibProxy(Class<T> daoClass, Class<S> itemClass) {
+        return CglibProxyGenerator.instantiate(
+                new CglibDispatcherInvocationHandler<>(
                         new GenericBucketRepository<S>(),
                         getInvoker(),
                         addInvoker(itemClass),

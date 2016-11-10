@@ -39,6 +39,11 @@
 	        <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.2.4</version>
+        </dependency>
+        <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-dep</artifactId>
             <version>1.5.2</version>
@@ -164,6 +169,7 @@
 						        <include>net.bytebuddy:byte-buddy-dep</include>
 						        <include>org.ow2.asm:asm</include>
 						        <include>org.ow2.asm:asm-commons</include>
+						        <include>cglib:cglib-nodep</include>
 					        </includes>
 					        <rules>
 						        <rule>
@@ -178,6 +184,10 @@
 							        <pattern>org.objectweb.asm.**</pattern>
 							        <result>cz.novoj.generation.internal.asm.@1</result>
 						        </rule>
+                                <rule>
+                                    <pattern>net.sf.cglib.**</pattern>
+                                    <result>cz.novoj.generation.internal.cglib.@1</result>
+                                </rule>
 					        </rules>
 				        </configuration>
 			        </execution>
