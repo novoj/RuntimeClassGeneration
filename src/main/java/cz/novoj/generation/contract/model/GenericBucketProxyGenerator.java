@@ -1,8 +1,10 @@
 package cz.novoj.generation.contract.model;
 
 import cz.novoj.generation.model.traits.PropertyAccessor;
-import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;
-import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
+import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistProxyGenerator;
+import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
@@ -49,7 +51,7 @@ public interface GenericBucketProxyGenerator {
 		return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get((String)args[0])
 		);
 	}
 
@@ -61,7 +63,21 @@ public interface GenericBucketProxyGenerator {
 		);
 	}
 
-	static <T> T instantiate(Class<T> contract) {
+	static <T> T instantiateJavassistProxy(Class<T> contract) {
+		return JavassistProxyGenerator.instantiate(
+				new JavassistDispatcherInvocationHandler<>(
+						new GenericBucket(64),
+						getPropertiesInvoker(),
+						getPropertyInvoker(),
+						setPropertyInvoker(),
+						getterInvoker(),
+						setterInvoker()
+				),
+				contract
+		);
+	}
+
+	static <T> T instantiateJdkProxy(Class<T> contract) {
 		return JdkProxyGenerator.instantiate(
 				new JdkProxyDispatcherInvocationHandler<>(
 						new GenericBucket(64),

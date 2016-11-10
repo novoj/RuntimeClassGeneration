@@ -1,4 +1,4 @@
-package cz.novoj.generation.proxyGenerator;
+package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
 
 import lombok.extern.apachecommons.CommonsLog;
 

@@ -6,6 +6,7 @@ import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.NO_CONTEXT;
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
@@ -33,6 +34,14 @@ public interface StandardJavaMethods {
 							  .bindTo(proxy)
 							  .invokeWithArguments(args);
 		}
+		);
+	}
+
+	static MethodClassification realMethodInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       method -> !Modifier.isAbstract(method.getModifiers()),
+        /* methodContext */ NO_CONTEXT,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> method.invoke(proxy, args)
 		);
 	}
 
