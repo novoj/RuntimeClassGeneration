@@ -36,11 +36,13 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.21.0-GA</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-dep</artifactId>
             <version>1.5.2</version>
+	        <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -145,6 +147,42 @@
                     </execution>
                 </executions>
             </plugin>
+	        <plugin>
+		        <groupId>org.sonatype.plugins</groupId>
+		        <artifactId>jarjar-maven-plugin</artifactId>
+		        <version>1.9</version>
+		        <executions>
+			        <execution>
+				        <phase>package</phase>
+				        <goals>
+					        <goal>jarjar</goal>
+				        </goals>
+				        <configuration>
+					        <overwrite>true</overwrite>
+					        <includes>
+						        <include>org.javassist:javassist</include>
+						        <include>net.bytebuddy:byte-buddy-dep</include>
+						        <include>org.ow2.asm:asm</include>
+						        <include>org.ow2.asm:asm-commons</include>
+					        </includes>
+					        <rules>
+						        <rule>
+							        <pattern>javassist.**</pattern>
+							        <result>cz.novoj.generation.internal.javassist.@1</result>
+						        </rule>
+						        <rule>
+							        <pattern>net.bytebuddy.**</pattern>
+							        <result>cz.novoj.generation.internal.bytebuddy.@1</result>
+						        </rule>
+						        <rule>
+							        <pattern>org.objectweb.asm.**</pattern>
+							        <result>cz.novoj.generation.internal.asm.@1</result>
+						        </rule>
+					        </rules>
+				        </configuration>
+			        </execution>
+		        </executions>
+	        </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -184,6 +222,11 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.17</version>
                 </plugin>
+	            <plugin>
+		            <groupId>org.sonatype.plugins</groupId>
+		            <artifactId>jarjar-maven-plugin</artifactId>
+		            <version>1.9</version>
+	            </plugin>
             </plugins>
         </pluginManagement>
     </build>
