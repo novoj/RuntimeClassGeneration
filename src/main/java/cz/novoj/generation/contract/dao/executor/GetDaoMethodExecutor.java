@@ -46,8 +46,8 @@ public class GetDaoMethodExecutor<T extends PropertyAccessor> extends AbstractDa
     }
 
     @Override
-    public Object apply(GenericBucketRepository<T> proxyState, Object[] args) {
-        final Stream<T> mainStream = proxyState
+    public Object apply(GenericBucketRepository<T> repositoryItem, Object[] args) {
+        final Stream<T> mainStream = repositoryItem
                 .getData()
                 .stream();
 

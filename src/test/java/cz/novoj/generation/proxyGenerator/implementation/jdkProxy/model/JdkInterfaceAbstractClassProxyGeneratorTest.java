@@ -12,7 +12,7 @@ import org.junit.Test;
 public class JdkInterfaceAbstractClassProxyGeneratorTest {
 
 	@Test(expected = IllegalArgumentException.class)
-	public void JavassistGenerator_ProxyAbstract_Created() throws Exception {
+	public void JdkProxyGenerator_ProxyAbstract_Created() throws Exception {
 		GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPersonAbstract.class);
 	}
 

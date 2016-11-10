@@ -39,8 +39,8 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
         return visitor.getPredicate();
     }
 
-    public Object apply(GenericBucketRepository<T> proxyState, Object[] args) {
-        final Stream<T> mainStream = proxyState
+    public Object apply(GenericBucketRepository<T> repositoryItem, Object[] args) {
+        final Stream<T> mainStream = repositoryItem
                 .getData()
                 .stream();
 
@@ -54,7 +54,7 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
         // compute result (at the and data would be already altered)
         final Object result = resultTransformer.apply(filteredStream, args);
 
-        final Stream<T> streamForRemoval = proxyState
+        final Stream<T> streamForRemoval = repositoryItem
                 .getData()
                 .stream();
 
@@ -64,9 +64,9 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
                         streamForRemoval
                                 .filter(t -> !predicate.test(new RepositoryItemWithMethodArgs<>(t, args)))
                                 .collect(Collectors.toCollection(() -> (List<T>)new LinkedList<T>()))
-                ).orElse(proxyState.getData());
+                ).orElse(repositoryItem.getData());
 
-        proxyState.resetDataTo(filteredData);
+        repositoryItem.resetDataTo(filteredData);
 
         return result;
     }
