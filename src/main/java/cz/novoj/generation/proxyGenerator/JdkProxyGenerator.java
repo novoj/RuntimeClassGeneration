@@ -29,6 +29,20 @@ public final class JdkProxyGenerator {
         );
     }
 
+	@SuppressWarnings("unchecked")
+	private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
+		try {
+			Constructor constructor = cachedProxyConstructors.computeIfAbsent(
+					proxyClass, JdkProxyGenerator::findParametrizedConstructor
+			);
+			return (T) constructor.newInstance(invocationHandler);
+		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+			throw new IllegalArgumentException(
+					"What the heck? Can't create proxy: " + e.getMessage(), e
+			);
+		}
+	}
+
     private static Class getProxyClass(List<Class> contract) {
         return cachedProxyClasses.computeIfAbsent(
                 contract,
@@ -46,26 +60,15 @@ public final class JdkProxyGenerator {
 		return proxyClass;
 	}
 
-    @SuppressWarnings("unchecked")
-	private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
-        try {
-            Constructor constructor = cachedProxyConstructors.computeIfAbsent(
-                    proxyClass, aClass -> {
-                        try {
-                            return proxyClass.getConstructor(InvocationHandler.class);
-                        } catch (NoSuchMethodException e) {
-                            throw new IllegalArgumentException(
-								"What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e
-							);
-                        }
-                    }
-            );
-            return (T) constructor.newInstance(invocationHandler);
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException(
-				"What the heck? Can't create proxy: " + e.getMessage(), e
+	@SuppressWarnings("unchecked")
+	private static Constructor findParametrizedConstructor(Class proxyClass) {
+		try {
+			return proxyClass.getConstructor(InvocationHandler.class);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException(
+				"What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e
 			);
-        }
-    }
+		}
+	}
 
 }
