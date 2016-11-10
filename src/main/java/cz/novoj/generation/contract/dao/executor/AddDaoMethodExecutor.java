@@ -1,6 +1,6 @@
 package cz.novoj.generation.contract.dao.executor;
 
-import cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils;
+import cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils;
 import cz.novoj.generation.contract.model.PropertyAccessor;
 
 import java.lang.reflect.Method;
@@ -22,7 +22,7 @@ public class AddDaoMethodExecutor<T extends PropertyAccessor> implements DaoMeth
     }
 
 	@Override
-	public Object apply(T repositoryItem, Object[] args) {
+	public T apply(T repositoryItem, Object[] args) {
 		populators.forEach(poupulator -> poupulator.accept(repositoryItem, args));
 		return repositoryItem;
 	}

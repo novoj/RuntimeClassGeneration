@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Rodina Novotnych on 06.11.2016.
  */
 @Data
-public class KeywordInstanceAccumulator {
+public class QueryNodeAccumulator {
     private final Keyword defaultKeyword;
     private final Keyword.Kind kind;
     private ContainerQueryNode rootKeyword;
@@ -31,7 +31,7 @@ public class KeywordInstanceAccumulator {
     @Setter(AccessLevel.NONE)
     private int constantIndex;
 
-    public KeywordInstanceAccumulator(KeywordContainer defaultContainer, Keyword defaultKeyword) {
+    public QueryNodeAccumulator(KeywordContainer defaultContainer, Keyword defaultKeyword) {
         this.rootKeyword = new ContainerQueryNode(defaultContainer);
         this.defaultKeyword = defaultKeyword;
         this.kind = defaultContainer.getKind();

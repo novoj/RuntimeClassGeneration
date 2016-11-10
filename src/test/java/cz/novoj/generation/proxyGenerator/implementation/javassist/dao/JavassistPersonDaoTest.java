@@ -3,18 +3,24 @@ package cz.novoj.generation.proxyGenerator.implementation.javassist.dao;
 import cz.novoj.generation.contract.dao.GenericBucketDaoProxyGenerator;
 import cz.novoj.generation.dao.PersonDao;
 import cz.novoj.generation.model.composite.CustomizedPerson;
+import cz.novoj.generation.proxyGenerator.infrastructure.ClockAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Rodina Novotnych on 02.11.2016.
@@ -28,12 +34,15 @@ public class JavassistPersonDaoTest {
         personDao = GenericBucketDaoProxyGenerator.instantiateJavassistProxy(PersonDao.class, CustomizedPerson.class);
 
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        try (java.io.InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {
+        try (InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {
             personDao.loadFromCsv(is);
         }
-    }
 
-    @Test
+		// fix date and time for tests
+		ClockAccessor.setFixedTime(LocalDateTime.of(2016, 11, 5, 0, 0, 0, 0));
+	}
+
+	@Test
     public void PersonDao_GetAll_returnsAllPersons() throws Exception {
         assertEquals(500, personDao.getAll().size());
     }

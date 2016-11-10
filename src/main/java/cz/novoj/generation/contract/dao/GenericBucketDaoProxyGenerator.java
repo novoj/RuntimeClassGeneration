@@ -25,13 +25,13 @@ public interface GenericBucketDaoProxyGenerator {
     String GET = "get";
     String REMOVE = "remove";
 
-    static <T extends PropertyAccessor> MethodClassification<AddDaoMethodExecutor, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
+    static <T extends PropertyAccessor> MethodClassification<AddDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
         return new MethodClassification<>(
         /* matcher */       method -> ADD.equals(method.getName()) && (method.getParameterCount() > 1 ||
                 (method.getParameterCount() == 1 && !itemClass.isAssignableFrom(method.getParameterTypes()[0]))),
         /* methodContext */ AddDaoMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
-            T item = methodContext.populate(proxy.createNew(), args);
+            T item = methodContext.apply(proxy.createNew(), args);
             proxyState.add(item);
             return null;
         });

@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import static cz.novoj.generation.contract.dao.executor.helper.ReflectionUtils.isMethodDeclaredOn;
+import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
 import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.NO_CONTEXT;
 
 /**

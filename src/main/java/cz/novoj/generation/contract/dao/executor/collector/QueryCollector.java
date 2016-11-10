@@ -1,7 +1,7 @@
-package cz.novoj.generation.contract.dao.executor.helper;
+package cz.novoj.generation.contract.dao.executor.collector;
 
 import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
-import cz.novoj.generation.contract.dao.executor.dto.KeywordInstanceAccumulator;
+import cz.novoj.generation.contract.dao.executor.dto.QueryNodeAccumulator;
 import cz.novoj.generation.contract.dao.executor.dto.QueryAccumulator;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
@@ -22,15 +22,15 @@ import static java.util.Optional.ofNullable;
 /**
  * Created by Rodina Novotnych on 05.11.2016.
  */
-public class KeywordsInstanceCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
+public class QueryCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
     private final EnumMap<Keyword.Kind, String> kindPrefixes = new EnumMap<>(Keyword.Kind.class);
     private final FilterKeywordContainer defaultFilterContainer;
     private final FilterKeyword defaultFilterKeyword;
     private final SortKeywordContainer defaultSortContainer;
     private final SortKeyword defaultSortKeyword;
 
-    public KeywordsInstanceCollector(FilterKeywordContainer defaultFilterContainer, FilterKeyword defaultFilterKeyword,
-                              SortKeywordContainer defaultSortContainer, SortKeyword defaultSortKeyword) {
+    public QueryCollector(FilterKeywordContainer defaultFilterContainer, FilterKeyword defaultFilterKeyword,
+						  SortKeywordContainer defaultSortContainer, SortKeyword defaultSortKeyword) {
         Objects.nonNull(FilterKeywordContainer.values());
         Objects.nonNull(FilterKeyword.values());
         Objects.nonNull(SortKeyword.values());
@@ -46,17 +46,17 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
     @Override
     public Supplier<QueryAccumulator> supplier() {
         return () -> new QueryAccumulator(
-                new KeywordInstanceAccumulator(defaultFilterContainer, defaultFilterKeyword),
-                new KeywordInstanceAccumulator(defaultSortContainer, defaultSortKeyword)
+                new QueryNodeAccumulator(defaultFilterContainer, defaultFilterKeyword),
+                new QueryNodeAccumulator(defaultSortContainer, defaultSortKeyword)
         );
     }
 
     @Override
     public BiConsumer<QueryAccumulator, String> accumulator() {
         return (acc, s) -> {
-            final Optional<KeywordInstanceAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
-            final List<String> accumulatedWords = activeAcc.map(KeywordInstanceAccumulator::getWords).orElse(acc.getUnrecognizedWords());
-            final List<Keyword> keywordAdepts = activeAcc.map(KeywordInstanceAccumulator::getKeywordAdepts).orElse(Collections.emptyList());
+            final Optional<QueryNodeAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
+            final List<String> accumulatedWords = activeAcc.map(QueryNodeAccumulator::getWords).orElse(acc.getUnrecognizedWords());
+            final List<Keyword> keywordAdepts = activeAcc.map(QueryNodeAccumulator::getKeywordAdepts).orElse(Collections.emptyList());
 
             final Keyword keyword = activeAcc.map(kiAcc -> findKeyword(s, accumulatedWords, kiAcc.getKind())).orElse(null);
             final Keyword.Kind kindPrefix = findKindPrefix(s, accumulatedWords);
@@ -91,7 +91,7 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
     @Override
     public Function<QueryAccumulator, DaoMethodQuery> finisher() {
         return acc -> {
-            Optional<KeywordInstanceAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
+            Optional<QueryNodeAccumulator> activeAcc = ofNullable(acc.getActiveAccumulator());
             activeAcc.ifPresent(aacc -> {
                 if (!aacc.getWords().isEmpty()) {
                     registerKeywordInstance(aacc, aacc.getKeywordAdepts());
@@ -109,7 +109,7 @@ public class KeywordsInstanceCollector implements Collector<String, QueryAccumul
         return Collections.emptySet();
     }
 
-    private void registerKeywordInstance(KeywordInstanceAccumulator acc, List<Keyword> keywords) {
+    private void registerKeywordInstance(QueryNodeAccumulator acc, List<Keyword> keywords) {
         String bareConstant = acc.popConstant(getComposedName(keywords));
 
         KeywordContainer keywordAffectingNextKeyword = null;

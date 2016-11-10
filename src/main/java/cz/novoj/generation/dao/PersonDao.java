@@ -62,11 +62,11 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
     @Override
     public abstract List<CustomizedPerson> getAll();
 
-    public abstract List<CustomizedPerson> getAllSortedByFirstName();
-
     public abstract void add(CustomizedPerson person);
 
     public abstract void add(String firstName, String lastName, LocalDate birthDate);
+
+	public abstract List<CustomizedPerson> getAllSortedByFirstName();
 
     public abstract CustomizedPerson getByFirstNameAndLastName(String firstName, String lastName);
 

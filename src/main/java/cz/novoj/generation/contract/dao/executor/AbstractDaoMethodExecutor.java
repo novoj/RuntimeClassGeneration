@@ -3,7 +3,7 @@ package cz.novoj.generation.contract.dao.executor;
 import cz.novoj.generation.contract.dao.GenericBucketDaoProxyGenerator;
 import cz.novoj.generation.contract.dao.GenericBucketRepository;
 import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
-import cz.novoj.generation.contract.dao.executor.helper.KeywordsInstanceCollector;
+import cz.novoj.generation.contract.dao.executor.collector.QueryCollector;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
@@ -32,7 +32,7 @@ abstract class AbstractDaoMethodExecutor<T extends PropertyAccessor> implements 
         return Arrays
                 .stream(StringUtils.splitByCharacterTypeCamelCase(methodName.substring(GenericBucketDaoProxyGenerator.GET.length())))
                 .collect(
-                        new KeywordsInstanceCollector(
+                        new QueryCollector(
                                 FilterKeywordContainer.And, FilterKeyword.Eq,
                                 SortKeywordContainer.And, SortKeyword.Asc
                         )

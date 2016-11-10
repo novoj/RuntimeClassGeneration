@@ -11,17 +11,17 @@ import java.util.List;
  */
 @Data
 public class QueryAccumulator {
-    private final KeywordInstanceAccumulator[] accumulators;
+    private final QueryNodeAccumulator[] accumulators;
     private final List<String> unrecognizedWords = new LinkedList<>();
-    private KeywordInstanceAccumulator activeAccumulator;
+    private QueryNodeAccumulator activeAccumulator;
 
-    public QueryAccumulator(KeywordInstanceAccumulator... accumulators) {
+    public QueryAccumulator(QueryNodeAccumulator... accumulators) {
         this.accumulators = accumulators;
         this.activeAccumulator = null;
     }
 
     public void switchAccumulator(Keyword.Kind kind) {
-        for (KeywordInstanceAccumulator accumulator : accumulators) {
+        for (QueryNodeAccumulator accumulator : accumulators) {
             if (accumulator.getKind() == kind) {
                 this.activeAccumulator = accumulator;
             }
