@@ -3,6 +3,10 @@ package cz.novoj.generation.contract;
 import cz.novoj.generation.proxyGenerator.infrastructure.ContextWiseMethodInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.NO_CONTEXT;
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
 
@@ -12,6 +16,25 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 public interface StandardJavaMethods {
+
+	static MethodClassification defaultMethodInvoker() {
+		return new MethodClassification<>(
+        /* matcher */       Method::isDefault,
+        /* methodContext */ NO_CONTEXT,
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+			Constructor<MethodHandles.Lookup> constructor =
+					MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
+
+			constructor.setAccessible(true);
+
+			Class<?> declaringClass = method.getDeclaringClass();
+			return constructor.newInstance(declaringClass, MethodHandles.Lookup.PRIVATE)
+							  .unreflectSpecial(method, declaringClass)
+							  .bindTo(proxy)
+							  .invokeWithArguments(args);
+		}
+		);
+	}
 
     static MethodClassification<Void, Object, Proxy> toStringMethodInvoker() {
         return new MethodClassification<>(

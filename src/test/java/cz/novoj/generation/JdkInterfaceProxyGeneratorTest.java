@@ -1,9 +1,10 @@
 package cz.novoj.generation;
 
 import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
-import cz.novoj.generation.model.traits.Person;
+import cz.novoj.generation.model.CustomizedPerson;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -17,71 +18,92 @@ public class JdkInterfaceProxyGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
-		Person person = GenericBucketProxyGenerator.instantiate(Person.class);
+		CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
 		assertNotNull(person);
 	}
 
 	@Test
 	public void JdkProxyGenerator_Proxy_GetPropertyReturnsSetValue() throws Exception {
-        final Person person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		assertEquals("Jan", person.getFirstName());
 		assertEquals("Novotný", person.getLastName());
+		assertEquals(LocalDate.of(1978, 5, 5), person.getBirthDate());
+	}
+
+	@Test
+	public void JdkProxyGenerator_Proxy_DefaultMethodComputesAge() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+
+		/** TODO property AGE is null, default method needs to be called **/
+		assertEquals(Integer.valueOf(38), person.getAge());
 	}
 
 	@Test
 	public void JdkProxyGenerator_Proxy_GetPropertiesReturnsPopulatedMap() throws Exception {
-        final Person person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
 		final Map<String, Object> props = person.getProperties();
-		assertEquals(2, props.size());
+		assertEquals(3, props.size());
 		assertTrue(props.containsKey("firstName"));
 		assertTrue(props.containsKey("lastName"));
+		assertTrue(props.containsKey("birthDate"));
 	}
 
 	@Test
 	public void JdkProxyGenerator_Proxy_PropertiesCanBeSetIntoMap() throws Exception {
-		final Person person = GenericBucketProxyGenerator.instantiate(Person.class);
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
 		final Map<String, Object> props = person.getProperties();
 		props.put("firstName", "Jan");
 		props.put("lastName", "Novotný");
+		props.put("birthDate", LocalDate.of(1978, 5, 5));
 
 		assertEquals("Jan", person.getFirstName());
 		assertEquals("Novotný", person.getLastName());
+		assertEquals(LocalDate.of(1978, 5, 5), person.getBirthDate());
 	}
 
 	@Test
 	public void JdkProxyGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
-        final Person person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("{lastName=Novotný, firstName=Jan}", person.toString());
+		assertEquals("{lastName=Novotný, birthDate=1978-05-05, firstName=Jan}", person.toString());
 	}
 
-    @Test
-    public void JdkProxyGenerator_Proxy_HashCodeContractRespected() throws Exception {
-        final Person person = createTestPersonProxy("Jan", "Novotný");
-        final Person samePerson = createTestPersonProxy("Jan", "Novotný");
+	@Test
+	public void JdkProxyGenerator_Proxy_HashCodeContractRespected() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
 
-        assertNotSame(person, samePerson);
-        assertEquals(person.hashCode(), samePerson.hashCode());
-    }
+		assertNotSame(person, samePerson);
+		assertEquals(person.hashCode(), samePerson.hashCode());
+	}
 
-    @Test
-    public void JdkProxyGenerator_Proxy_EqualsContractRespected() throws Exception {
-        final Person person = createTestPersonProxy("Jan", "Novotný");
-        final Person samePerson = createTestPersonProxy("Jan", "Novotný");
-        final Person differentPerson = createTestPersonProxy("Petr", "Novák");
+	@Test
+	public void JdkProxyGenerator_Proxy_EqualsContractRespected() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson samePerson = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson differentPerson = createTestPersonProxy("Petr", "Novák");
 
-        assertNotSame(person, samePerson);
-        assertEquals(person, samePerson);
-        assertNotEquals(person, differentPerson);
-    }
+		assertNotSame(person, samePerson);
+		assertEquals(person, samePerson);
+		assertNotEquals(person, differentPerson);
+	}
 
-    private Person createTestPersonProxy(String firstName, String lastName) {
-        final Person person = GenericBucketProxyGenerator.instantiate(Person.class);
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        return person;
-    }
+	@Test
+	public void JdkProxyGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
+
+		/** TODO exception in here is expected **/
+		person.doWork();
+	}
+
+	private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiate(CustomizedPerson.class);
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setBirthDate(LocalDate.of(1978, 5, 5));
+		return person;
+	}
 
 }
