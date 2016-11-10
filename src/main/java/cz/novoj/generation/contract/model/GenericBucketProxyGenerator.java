@@ -1,6 +1,7 @@
 package cz.novoj.generation.contract.model;
 
-import cz.novoj.generation.model.Proxy;
+import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
+import cz.novoj.generation.proxyGenerator.infrastructure.Proxy;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -14,16 +15,11 @@ import java.lang.reflect.Method;
 public interface GenericBucketProxyGenerator {
 
 	static <T> T instantiate(Class<T> contract) {
-		return (T)java.lang.reflect.Proxy.newProxyInstance(
-				GenericBucketProxyGenerator.class.getClassLoader(), new Class[] {contract, Proxy.class},
-				new GenericBucketInvocationHandler()
-		);
+		return JdkProxyGenerator.instantiate(new GenericBucketInvocationHandler(), contract);
 	}
 
 	class GenericBucketInvocationHandler implements InvocationHandler {
 		private final GenericBucket genericBucket = new GenericBucket(32);
-
-		// TODO POUZE ROZDĚLENÍ NA CLASS A NEW INSTANCE
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
