@@ -7,9 +7,7 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public interface Keyword {
 
     enum Kind { Filter, Sort }

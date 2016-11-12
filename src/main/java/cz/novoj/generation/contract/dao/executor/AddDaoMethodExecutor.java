@@ -47,7 +47,7 @@ public class AddDaoMethodExecutor<T extends PropertyAccessor> implements DaoMeth
 	 * @return
 	 */
 	@Override
-	public T apply(T proxyState, Object[] args) {
+	public T apply(T proxyState, Object... args) {
 		populateFcts.forEach(poupulator -> poupulator.accept(proxyState, args));
 		return proxyState;
 	}

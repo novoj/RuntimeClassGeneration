@@ -3,9 +3,7 @@ package cz.novoj.generation.contract.dao.query.keyword.filter;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import lombok.Getter;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public enum FilterKeyword implements Keyword {
 
     Eq(true),

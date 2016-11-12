@@ -18,16 +18,14 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends AbstractDaoMethodExecutor<T> {
 
     private final Optional<Predicate<RepositoryItemWithMethodArgs<T>>> filterPredicate;
     private final BiFunction<Stream<T>, Object[], ?> resultTransformer;
 
     public RemoveDaoMethodExecutor(Method method) {
-        final DaoMethodQuery daoMethodQuery = getKeywordInstances(method.getName());
+        final DaoMethodQuery daoMethodQuery = getQueryAST(method.getName());
 
         this.filterPredicate = ofNullable(daoMethodQuery.getFilter()).map(keywordInstance -> getFilterPredicate(method, keywordInstance));
         this.resultTransformer = getResultTransformer(method);

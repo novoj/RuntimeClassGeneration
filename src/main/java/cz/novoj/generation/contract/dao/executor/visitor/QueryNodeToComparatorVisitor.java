@@ -7,55 +7,93 @@ import cz.novoj.generation.contract.dao.query.instance.QueryNodeVisitor;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 import cz.novoj.generation.model.traits.PropertyAccessor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Comparator;
 import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-
+/**
+ * This visitor translates query AST node tree into the {@link Comparator} chain.
+ * Other implementation might generate SQL, MongoDB, Elastic Search query.
+ *
+ * @param <U>
+ */
 public class QueryNodeToComparatorVisitor<U extends PropertyAccessor> implements QueryNodeVisitor {
-    @Getter private Comparator<U> comparator;
-    private Stack<Consumer<Comparator<U>>> comparatorConsumer = new Stack<>();
+	// stack is used for composing comparator chain
+	private final Stack<Consumer<Comparator<U>>> comparatorConsumer = new Stack<>();
+	// final comparator created by this visitor
+	@Getter private Comparator<U> comparator;
 
     public QueryNodeToComparatorVisitor() {
-        comparatorConsumer.push(p -> QueryNodeToComparatorVisitor.this.comparator = p);
+		// initially what's passed to the consumer is set to the root comparator (ie. result)
+        comparatorConsumer.push(p -> this.comparator = p);
     }
 
+	/**
+	 * Visits {@link LeafQueryNode} and converts it into {@link Comparator}.
+	 *
+	 * @param queryNode
+	 */
     @Override
-    public void accept(LeafQueryNode keywordInstance) {
-        comparatorConsumer.peek().accept((o1, o2) -> PropertyAccessor.compare(
-            (SortKeyword) keywordInstance.getKeyword(), o1, o2, keywordInstance.getConstant()
-        ));
+    public void accept(LeafQueryNode queryNode) {
+        comparatorConsumer.peek().accept(
+				(o1, o2) -> {
+					// create comparator that will compare o1 and o2
+					// according to keyword and property value under specified name
+					final SortKeyword keyword = (SortKeyword)queryNode.getKeyword();
+					final String propertyName = queryNode.getConstant();
+					return PropertyAccessor.compare(keyword, o1, o2, propertyName);
+				}
+		);
     }
 
+	/**
+	 * Visits {@link ContainerQueryNode} and propagates visit to all container children.
+	 *
+	 * @param queryNode
+	 */
     @Override
-    public void accept(ContainerQueryNode keywordInstance) {
+    public void accept(ContainerQueryNode queryNode) {
+		/**
+		 * create new query node consumer that chains all comparators inside this query node container into one
+		 * ie. when this query container is AND all children will be chained by {@link Comparator#thenComparing(Comparator)} method.
+		 **/
+        final ContainerComparatorConsumer<U> subKeywordPredicateConsumer =
+                new ContainerComparatorConsumer<>((SortKeywordContainer) queryNode.getKeyword());
 
-        ContainerComparatorConsumer<U> subKeywordPredicateConsumer =
-                new ContainerComparatorConsumer<>((SortKeywordContainer) keywordInstance.getKeyword());
-
+		// register our consumer on the stack, so that all children use it for composition
         comparatorConsumer.push(subKeywordPredicateConsumer);
-        for (QueryNode ki : keywordInstance.getSubKeywords()) {
+		// visit all children
+        for (QueryNode ki : queryNode.getSubKeywords()) {
             ki.visit(this);
         }
+		// remove consumer from the stack - we're returning one level up from the tree
         comparatorConsumer.pop();
-
+		// consume result predicate by the previous consumer
         comparatorConsumer.peek().accept(subKeywordPredicateConsumer.getFinalComparator());
 
     }
 
-    @Data
+	/**
+	 * This consumer class is used to combine (chain) multiple {@link Predicate} into one based on the query node keyword.
+	 * @param <U>
+	 */
     @RequiredArgsConstructor
     private static class ContainerComparatorConsumer<U extends PropertyAccessor> implements Consumer<Comparator<U>> {
+		/**
+		 * this keyword determines what type of chaining should occur - maybe too abstract, because we can use
+		 * only {@link Comparator#thenComparing(Comparator)} here
+		 **/
         private final SortKeywordContainer keyword;
-        private Comparator<U> finalComparator;
+		// chained comparators are stored in this field
+        @Getter private Comparator<U> finalComparator;
 
         @Override
-        public void accept(Comparator<U> comparator) {
-            finalComparator = PropertyAccessor.compare(keyword, finalComparator, comparator);
+        public void accept(Comparator<U> t) {
+            finalComparator = PropertyAccessor.compare(keyword, finalComparator, t);
         }
     }
 }

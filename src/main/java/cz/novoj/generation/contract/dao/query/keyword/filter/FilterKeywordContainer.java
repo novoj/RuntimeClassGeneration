@@ -3,9 +3,7 @@ package cz.novoj.generation.contract.dao.query.keyword.filter;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public enum FilterKeywordContainer implements KeywordContainer {
 
     And(false),

@@ -6,9 +6,7 @@ import lombok.Data;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 @Data
 public class ContainerQueryNode implements QueryNode {
     private final KeywordContainer keyword;

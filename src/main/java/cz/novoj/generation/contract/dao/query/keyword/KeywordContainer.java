@@ -1,8 +1,6 @@
 package cz.novoj.generation.contract.dao.query.keyword;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public interface KeywordContainer extends Keyword {
 
     @Override

@@ -15,17 +15,15 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static cz.novoj.generation.contract.dao.executor.GetDaoMethodExecutor.getKeywordInstances;
+import static cz.novoj.generation.contract.dao.executor.GetDaoMethodExecutor.getQueryAST;
 import static org.junit.Assert.*;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameAndLastName_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameAndLastName");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameAndLastName");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
 
@@ -36,7 +34,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByAge_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByAge");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByAge");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
         assertSubKeywordIsConstant(Collections.singletonList(filter), 0, FilterKeyword.Eq, "age");
@@ -44,7 +42,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameIsNull_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameIsNull");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameIsNull");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
         assertSubKeywordIsConstant(Collections.singletonList(filter), 0, FilterKeyword.IsNull, "firstName");
@@ -52,7 +50,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByAgeLessThanEqAndFirstNameContainsOrLastName_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByAgeLessThanEqAndFirstNameContainsOrLastName");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByAgeLessThanEqAndFirstNameContainsOrLastName");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
         List<QueryNode> subKeywords = assertSubKeywordIsContainer(Collections.singletonList(filter), 0, FilterKeywordContainer.Or);
@@ -65,7 +63,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByAgeLessThanAndFirstNameContainsOrLastNameEquals_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByAgeLessThanAndFirstNameContainsOrLastNameEq");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByAgeLessThanAndFirstNameContainsOrLastNameEq");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
 
@@ -79,7 +77,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameOrLastNameAndAgeMoreThan_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameOrLastNameAndAgeMoreThan");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameOrLastNameAndAgeMoreThan");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
 
@@ -93,7 +91,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameOrLastNameNotEquals_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameOrLastNameNotEq");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameOrLastNameNotEq");
         QueryNode filter = daoMethodQuery.getFilter();
         assertNull(daoMethodQuery.getSort());
 
@@ -105,7 +103,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameSortedByAgeDesc_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameSortedByAge");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameSortedByAge");
 
         QueryNode filter = daoMethodQuery.getFilter();
         assertSubKeywordIsConstant(Collections.singletonList(filter), 0, FilterKeyword.Eq, "firstName");
@@ -116,7 +114,7 @@ public class AbstractDaoMethodExecutorTest {
 
     @Test
     public void GetMethodDecomposition_GetByFirstNameAndAgeLessThanSortedByAgeDescAndLastNameAsc_returnsKeywordInstance() throws Exception {
-        DaoMethodQuery daoMethodQuery = getKeywordInstances("getByFirstNameEqAndAgeLessThanSortedByAgeDescAndLastNameAsc");
+        DaoMethodQuery daoMethodQuery = getQueryAST("getByFirstNameEqAndAgeLessThanSortedByAgeDescAndLastNameAsc");
 
         QueryNode filter = daoMethodQuery.getFilter();
         List<QueryNode> filterSubKeywords = assertSubKeywordIsContainer(Collections.singletonList(filter), 0, FilterKeywordContainer.And);

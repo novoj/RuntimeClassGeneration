@@ -19,9 +19,7 @@ import java.util.stream.Collector;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * Created by Rodina Novotnych on 05.11.2016.
- */
+
 public class QueryCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
     private final EnumMap<Keyword.Kind, String> kindPrefixes = new EnumMap<>(Keyword.Kind.class);
     private final FilterKeywordContainer defaultFilterContainer;
