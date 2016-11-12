@@ -24,7 +24,7 @@ public interface SerializableProxy extends Serializable {
 
     Object writeReplace() throws ObjectStreamException;
 
-    static <T> MethodClassification<Void, T, ProxyStateAccessor> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
+    static <T> MethodClassification<ProxyStateAccessor, Void, T> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, SerializableProxy.class, "writeReplace"),
         /* methodContext */ method -> null,

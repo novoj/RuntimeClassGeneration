@@ -27,7 +27,7 @@ public interface GenericBucketDaoProxyGenerator {
     String GET = "get";
     String REMOVE = "remove";
 
-    static <T extends PropertyAccessor> MethodClassification<AddDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> addInvoker(Class<T> itemClass) {
+    static <T extends PropertyAccessor> MethodClassification<Dao<T>, AddDaoMethodExecutor<T>, GenericBucketRepository<T>> addInvoker(Class<T> itemClass) {
         return new MethodClassification<>(
         /* matcher */       method -> ADD.equals(method.getName()) && (method.getParameterCount() > 1 ||
                 (method.getParameterCount() == 1 && !itemClass.isAssignableFrom(method.getParameterTypes()[0]))),
@@ -39,7 +39,7 @@ public interface GenericBucketDaoProxyGenerator {
         });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<Void, GenericBucketRepository<T>, Dao<T>> addProxyInvoker(Class<T> itemClass) {
+    static <T extends PropertyAccessor> MethodClassification<Dao<T>, Void, GenericBucketRepository<T>> addProxyInvoker(Class<T> itemClass) {
         return new MethodClassification<>(
         /* matcher */       method -> ADD.equals(method.getName()) &&
                 (method.getParameterCount() == 1 && itemClass.isAssignableFrom(method.getParameterTypes()[0])),
@@ -50,14 +50,14 @@ public interface GenericBucketDaoProxyGenerator {
         });
     }
 
-    static <T extends PropertyAccessor> MethodClassification<GetDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> getInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<Dao<T>, GetDaoMethodExecutor<T>, GenericBucketRepository<T>> getInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET),
         /* methodContext */ GetDaoMethodExecutor::new,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
-    static <T extends PropertyAccessor> MethodClassification<RemoveDaoMethodExecutor<T>, GenericBucketRepository<T>, Dao<T>> removeInvoker() {
+    static <T extends PropertyAccessor> MethodClassification<Dao<T>, RemoveDaoMethodExecutor<T>, GenericBucketRepository<T>> removeInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(REMOVE),
         /* methodContext */ RemoveDaoMethodExecutor::new,

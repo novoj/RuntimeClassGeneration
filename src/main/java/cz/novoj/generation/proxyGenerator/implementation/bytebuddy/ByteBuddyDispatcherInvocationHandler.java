@@ -1,7 +1,7 @@
 package cz.novoj.generation.proxyGenerator.implementation.bytebuddy;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.AbstractDispatcherInvocationHandler;
-import cz.novoj.generation.proxyGenerator.infrastructure.ContextWiseMethodInvocationHandler;
+import cz.novoj.generation.proxyGenerator.infrastructure.CurriedMethodContextInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import lombok.extern.apachecommons.CommonsLog;
 
@@ -10,28 +10,27 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by Rodina Novotnych on 28.10.2016.
- */
 @CommonsLog
 public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements InvocationHandler {
-
     /* this cache might be somewhere else, but for the sake of the example ... */
-    private static final Map<Method, ContextWiseMethodInvocationHandler> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
+    private static final Map<Method, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public ByteBuddyDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
+    public ByteBuddyDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        final ContextWiseMethodInvocationHandler invocationHandler =
-                CLASSIFICATION_CACHE.computeIfAbsent(
-                        method,
-                        this::getContextWiseMethodInvocationHandler
-                );
-
-        return invocationHandler.invoke(proxy, method, args, proxyState);
-    }
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
+		final CurriedMethodContextInvocationHandler invocationHandler = CLASSIFICATION_CACHE.computeIfAbsent(
+				// CACHE KEY
+				method,
+				// LAMBDA THAT CREATES CURRIED METHOD INVOCATION HANDLER
+				this::getCurriedMethodContextInvocationHandler
+		);
+		// INVOKE CURRIED LAMBDA
+		return invocationHandler.invoke(proxy, method, args, proxyState);
+	}
 
 }

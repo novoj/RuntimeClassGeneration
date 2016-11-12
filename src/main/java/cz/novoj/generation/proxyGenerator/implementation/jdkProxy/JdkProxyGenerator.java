@@ -18,18 +18,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
 @CommonsLog
-public final class JdkProxyGenerator {
-    private static final Map<List<Class>, Class> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
-    private static final Map<Class, Constructor> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
+public class JdkProxyGenerator {
+    private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
+    private static final Map<Class<?>, Constructor<?>> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 
-    public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
+    @SuppressWarnings("unchecked")
+	public static <T> T instantiate(InvocationHandler invocationHandler, Class<?>... interfaces) {
         return instantiateProxy(
-                getProxyClass(interfaces),
+				(Class<T>)getProxyClass(interfaces),
                 invocationHandler
         );
     }
 
-    private static Class getProxyClass(Class... contract) {
+    private static Class<?> getProxyClass(Class<?>... contract) {
 		// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
         return CACHED_PROXY_CLASSES.computeIfAbsent(
 				// CACHE KEY
@@ -47,10 +48,10 @@ public final class JdkProxyGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
+    private static <T> T instantiateProxy(Class<T> proxyClass, InvocationHandler invocationHandler) {
         try {
 			// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
-            Constructor<T> constructor = CACHED_PROXY_CONSTRUCTORS.computeIfAbsent(
+            Constructor<T> constructor = (Constructor<T>)CACHED_PROXY_CONSTRUCTORS.computeIfAbsent(
 					// CACHE KEY
                     proxyClass,
 					// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
