@@ -1,40 +1,70 @@
 package cz.novoj.generation.proxyGenerator.implementation.javassist;
 
-import cz.novoj.generation.proxyGenerator.implementation.AbstractDispatcherInvocationHandler;
-import cz.novoj.generation.proxyGenerator.infrastructure.ContextWiseMethodInvocationHandler;
+import cz.novoj.generation.contract.ProxyStateAccessor;
+import cz.novoj.generation.contract.StandardJavaMethods;
+import cz.novoj.generation.proxyGenerator.infrastructure.CurriedMethodContextInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import javassist.util.proxy.MethodHandler;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 @CommonsLog
-public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements MethodHandler {
+public class JavassistDispatcherInvocationHandler<T> implements MethodHandler {
+	/* this cache might be somewhere else, but for the sake of the example ... */
+	private static final Map<Method, CurriedMethodContextInvocationHandler<?, ?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
+	/* proxyState object unique to each proxy instance */
+	private final T proxyState;
+	/* ordered list of method classifications - ie atomic features of the proxy */
+	private final List<MethodClassification<?, ?, ?>> methodClassifications = new LinkedList<>();
 
-    /* this cache might be somewhere else, but for the sake of the example ... */
-    private static final Map<Method, ContextWiseMethodInvocationHandler> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
+	public JavassistDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?, ?>... methodClassifications) {
+		this.proxyState = proxyState;
+		// firstly add all standard Java Object features
+		this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
+		this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
+		this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
+		// TODO UNCOMMENT ME this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
+		// TODO UNCOMMENT ME this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
+		// then add infrastructural ProxyStateAccessor handling
+		this.methodClassifications.add(ProxyStateAccessor.getProxyStateMethodInvoker());
+		// finally add all method classifications developer wants
+		Collections.addAll(this.methodClassifications, methodClassifications);
+	}
 
-    public JavassistDispatcherInvocationHandler(T proxyState, MethodClassification... methodClassifications) {
-        super(proxyState, methodClassifications);
-    }
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
+		// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
+		final CurriedMethodContextInvocationHandler invocationHandler =
+				CLASSIFICATION_CACHE.computeIfAbsent(
+						// CACHE KEY
+						thisMethod,
+						// LAMBDA THAT CREATES CURRIED METHOD INVOCATION HANDLER
+						this::getCurriedMethodContextInvocationHandler
+				);
 
-    @Override
-    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
-        final ContextWiseMethodInvocationHandler invocationHandler =
-                CLASSIFICATION_CACHE.computeIfAbsent(
-                        thisMethod,
-                        this::getContextWiseMethodInvocationHandler
-                );
+		// INVOKE CURRIED LAMBDA, PASS REFERENCE TO REAL METHOD IF AVAILABLE
+		return invocationHandler.invoke(self, proceed == null ? thisMethod : proceed, args, proxyState);
+	}
 
-		/**
-		 * @param thisMethod    the overridden method declared in the super class or interface.
-		 * @param proceed       the forwarder method for invoking the overridden method.
-		 *                      It is null if the overridden method is abstract or declared in the interface.
-		 */
-        return invocationHandler.invoke(self, proceed == null ? thisMethod : proceed, args, proxyState);
-    }
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	protected CurriedMethodContextInvocationHandler getCurriedMethodContextInvocationHandler(Method method) {
+		log.info("Creating proxy method handler for " + method.toGenericString());
+		return methodClassifications.stream()
+									//find proper method classification (invoker handler) for passed method
+									.filter(methodClassification -> methodClassification.matches(method))
+									//create curried invocation handler (invocation handler curried with method state)
+									.map(methodClassification -> methodClassification.createMethodContext(method))
+									//return first matching curried method context
+									.findFirst()
+									//return missing invocation handler throwing exception
+									.orElse(StandardJavaMethods.missingImplementationInvoker());
+	}
 
 }

@@ -1,8 +1,7 @@
 package cz.novoj.generation;
 
-import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.CustomizedPerson;
-import cz.novoj.generation.model.CustomizedPersonAbstract;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -15,6 +14,7 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
+@SuppressWarnings("Duplicates")
 public class JdkInterfaceProxyGeneratorTest {
 
 	@Test
@@ -90,15 +90,9 @@ public class JdkInterfaceProxyGeneratorTest {
 		assertNotEquals(person, differentPerson);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void JdkProxyGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
-		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
-		person.doWork();
-	}
-
 	@Test
 	public void JdkProxyGenerator_ProxyAbstract_Created() throws Exception {
-		GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPersonAbstract.class);
+		GenericBucketProxyGenerator.instantiateJdkProxy(CustomizedPerson.class);
 	}
 
 	private CustomizedPerson createTestPersonProxy(String firstName, String lastName) {

@@ -1,8 +1,7 @@
 package cz.novoj.generation;
 
-import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.CustomizedPerson;
-import cz.novoj.generation.model.CustomizedPersonAbstract;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -72,7 +71,7 @@ public class JavassistAbstractClassProxyGeneratorTest {
 	public void JavassistGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
 		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("{lastName=Novotný, birthDate=1978-05-05, firstName=Jan}", person.toString());
+		assertEquals("{firstName=Jan, lastName=Novotný, birthDate=1978-05-05}", person.toString());
 	}
 
 	@Test
@@ -95,26 +94,20 @@ public class JavassistAbstractClassProxyGeneratorTest {
 		assertNotEquals(person, differentPerson);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void JavassistGenerator_Proxy_NonhandledMethodThrowsException() throws Exception {
-		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
-		person.doWork();
-	}
-
 	@Test
 	public void JavassistGenerator_ProxyAbstract_Created() throws Exception {
-		CustomizedPerson person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPersonAbstract.class);
+		CustomizedPerson person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
 		assertNotNull(person);
 	}
 
 	@Test
 	public void JavassistGenerator_ProxyAbstract_InvokesRealMethodUsingAbstractOnes() throws Exception {
-		final CustomizedPersonAbstract person = createTestPersonProxy("Jan", "Novotný");
+		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 		assertEquals("Jan Novotný", person.getCompleteName());
 	}
 
-	private static CustomizedPersonAbstract createTestPersonProxy(String firstName, String lastName) {
-		final CustomizedPersonAbstract person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPersonAbstract.class);
+	private static CustomizedPerson createTestPersonProxy(String firstName, String lastName) {
+		final CustomizedPerson person = GenericBucketProxyGenerator.instantiateJavassistProxy(CustomizedPerson.class);
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
 		person.setBirthDate(LocalDate.of(1978, 5, 5));
