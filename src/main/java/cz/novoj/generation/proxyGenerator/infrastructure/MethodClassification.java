@@ -7,7 +7,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public class MethodClassification<T, S, U> {
+public class MethodClassification<U, T, S> {
+	/** no operation lambda creating void methodContext **/
     public static final Function<Method, Void> NO_CONTEXT = method -> null;
 
 	/** this predicate checks method and returns true only if this classification should be applied on method **/
@@ -23,7 +24,7 @@ public class MethodClassification<T, S, U> {
 	 *
 	 * this method handler will be called by DispatcherInvocationHandler for each method execution on proxy
 	 */
-    private final MethodInvocationHandler<T, S, U> invocationHandler;
+    private final MethodInvocationHandler<U, T, S> invocationHandler;
 
 	/**
 	 * Delegates matching logic to methodMatcher predicate.
@@ -43,7 +44,7 @@ public class MethodClassification<T, S, U> {
 	 * @param classificationMethod
 	 * @return lambda with method context baked in, so that only proxy, method and args are necessary to invoke logic
 	 */
-	public ContextWiseMethodInvocationHandler<S, U> createMethodContext(Method classificationMethod) {
+	public CurriedMethodContextInvocationHandler<S, U> createMethodContext(Method classificationMethod) {
         return (proxy, executionMethod, args, proxyState) -> invocationHandler.invoke(
                 proxy, executionMethod, args, methodContextFactory.apply(classificationMethod), proxyState
         );

@@ -1,22 +1,19 @@
-package cz.novoj.generation.contract;
+package cz.novoj.generation.model;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.*;
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
 
-/**
- * Created by Rodina Novotnych on 28.10.2016.
- */
-public interface Proxy {
+public interface ProxyStateAccessor {
 
     Object getProxyState();
 
-    static MethodClassification<Void, Object, Proxy> getProxyStateMethodInvoker() {
+    static MethodClassification<ProxyStateAccessor, Void, Object> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> isMethodDeclaredOn(method, Proxy.class, "getProxyState"),
+        /* matcher */       method -> isMethodDeclaredOn(method, ProxyStateAccessor.class, "getProxyState"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+        /* invocation */    (proxyStateAccessor, method, args, methodContext, proxyState) -> proxyState
         );
     }
 

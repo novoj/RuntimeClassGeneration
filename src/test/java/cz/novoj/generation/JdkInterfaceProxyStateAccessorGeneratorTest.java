@@ -1,6 +1,6 @@
 package cz.novoj.generation;
 
-import cz.novoj.generation.contract.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.Person;
 import org.junit.Test;
 
@@ -8,12 +8,8 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
-public class JdkInterfaceProxyGeneratorTest {
+
+public class JdkInterfaceProxyStateAccessorGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
@@ -54,7 +50,7 @@ public class JdkInterfaceProxyGeneratorTest {
 	public void JdkProxyGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
         final Person person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("{lastName=Novotný, firstName=Jan}", person.toString());
+		assertEquals("{firstName=Jan, lastName=Novotný}", person.toString());
 	}
 
     @Test
