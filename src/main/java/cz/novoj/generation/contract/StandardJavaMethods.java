@@ -1,6 +1,5 @@
 package cz.novoj.generation.contract;
 
-import cz.novoj.generation.contract.model.GenericBucket;
 import cz.novoj.generation.proxyGenerator.infrastructure.CurriedMethodContextInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils;
@@ -16,7 +15,7 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 public interface StandardJavaMethods {
 
 	/** METHOD CONTRACT: catch all default methods and delegate calls to them **/
-	static MethodClassification<ProxyStateAccessor, MethodHandle, GenericBucket> defaultMethodInvoker() {
+	static MethodClassification<ProxyStateAccessor, MethodHandle, Object> defaultMethodInvoker() {
 		return new MethodClassification<>(
         /* matcher */       Method::isDefault,
         /* methodContext */ ReflectionUtils::findMethodHandle,
@@ -26,7 +25,7 @@ public interface StandardJavaMethods {
 	}
 
 	/** METHOD CONTRACT: catch all real (not abstract) methods and delegate calls to them **/
-	static MethodClassification<ProxyStateAccessor, Void, GenericBucket> realMethodInvoker() {
+	static MethodClassification<ProxyStateAccessor, Void, Object> realMethodInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> !Modifier.isAbstract(method.getModifiers()),
         /* methodContext */ NO_CONTEXT,

@@ -1,11 +1,8 @@
-package cz.novoj.generation.contract;
+package cz.novoj.generation.contract.model;
 
-import cz.novoj.generation.contract.model.GenericBucket;
 import cz.novoj.generation.model.traits.PropertyAccessor;
-import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDispatcherInvocationHandler;
-import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistProxyGenerator;
-import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyDispatcherInvocationHandler;
-import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenerator;
+import cz.novoj.generation.proxyGenerator.JavassistDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.JavassistProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
@@ -71,25 +68,7 @@ public interface GenericBucketProxyGenerator {
 		});
 	}
 
-	static <T> T instantiateJdkProxy(Class<T> contract) {
-		return JdkProxyGenerator.instantiate(
-				// create invocation handler delegating calls to "classifications" - ie atomic features of the proxy
-				new JdkProxyDispatcherInvocationHandler<>(
-						// proxy state
-						new GenericBucket(),
-						// list of features - order is important
-						getPropertiesInvoker(),
-						getPropertyInvoker(),
-						setPropertyInvoker(),
-						getterInvoker(),
-						setterInvoker()
-				),
-				// interfaces to implement
-				contract
-		);
-	}
-
-	static <T> T instantiateJavassistProxy(Class<T> contract) {
+	static <T> T instantiate(Class<T> contract) {
 		return JavassistProxyGenerator.instantiate(
 				// create invocation handler delegating calls to "classifications" - ie atomic features of the proxy
 				new JavassistDispatcherInvocationHandler<>(

@@ -1,4 +1,4 @@
-package cz.novoj.generation.proxyGenerator.implementation.javassist;
+package cz.novoj.generation.proxyGenerator;
 
 import cz.novoj.generation.contract.ProxyStateAccessor;
 import cz.novoj.generation.contract.StandardJavaMethods;
@@ -29,8 +29,8 @@ public class JavassistDispatcherInvocationHandler<T> implements MethodHandler {
 		this.methodClassifications.add(StandardJavaMethods.hashCodeMethodInvoker());
 		this.methodClassifications.add(StandardJavaMethods.equalsMethodInvoker());
 		this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
-		// TODO UNCOMMENT ME this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
-		// TODO UNCOMMENT ME this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
+		this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
+		this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
 		// then add infrastructural ProxyStateAccessor handling
 		this.methodClassifications.add(ProxyStateAccessor.getProxyStateMethodInvoker());
 		// finally add all method classifications developer wants

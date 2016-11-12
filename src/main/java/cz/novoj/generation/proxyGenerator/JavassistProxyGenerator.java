@@ -1,4 +1,4 @@
-package cz.novoj.generation.proxyGenerator.implementation.javassist;
+package cz.novoj.generation.proxyGenerator;
 
 import cz.novoj.generation.contract.ProxyStateAccessor;
 import javassist.util.proxy.MethodHandler;
