@@ -1,17 +1,12 @@
 package cz.novoj.generation.contract.model;
 
 import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
-import cz.novoj.generation.proxyGenerator.infrastructure.Proxy;
+import cz.novoj.generation.model.Proxy;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
 public interface GenericBucketProxyGenerator {
 
 	static <T> T instantiate(Class<T> contract) {
@@ -19,20 +14,20 @@ public interface GenericBucketProxyGenerator {
 	}
 
 	class GenericBucketInvocationHandler implements InvocationHandler {
-		private final GenericBucket genericBucket = new GenericBucket(32);
+		private final GenericBucket genericBucket = new GenericBucket();
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (Proxy.class.getDeclaredMethod("getProxyState").equals(method)) {
 				return genericBucket;
-			} else if (method.getName().equals("getProperties")) {
-				return genericBucket;
+			} else if ("getProperties".equals(method.getName())) {
+				return genericBucket.getData();
 			} else if (method.getName().startsWith("get")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
 				return genericBucket.get(propertyName);
 			} else if (method.getName().startsWith("set")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				genericBucket.put(propertyName, args[0]);
+				genericBucket.set(propertyName, args[0]);
 				return null;
 			} else if (Object.class.getDeclaredMethod("hashCode").equals(method)) {
 				return genericBucket.hashCode();
