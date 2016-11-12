@@ -3,11 +3,7 @@ package cz.novoj.generation.contract.model;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public interface GenericBucketProxyGenerator {
 
 	static <T> T instantiate(Class<T> contract) {
