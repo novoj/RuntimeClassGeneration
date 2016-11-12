@@ -3,6 +3,9 @@ package cz.novoj.generation.contract.model;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDeserializationProxyFactory;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
+import cz.novoj.generation.proxyGenerator.implementation.cglib.CglibDeserializationProxyFactory;
+import cz.novoj.generation.proxyGenerator.implementation.cglib.CglibDispatcherInvocationHandler;
+import cz.novoj.generation.proxyGenerator.implementation.cglib.CglibProxyGenerator;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDeserializationProxyFactory;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.javassist.JavassistProxyGenerator;
@@ -81,6 +84,21 @@ public interface GenericBucketProxyGenerator {
                 contract, SerializableProxy.class
         );
     }
+
+	static <T> T instantiateCglibProxy(Class<T> contract) {
+		return CglibProxyGenerator.instantiate(
+				new CglibDispatcherInvocationHandler<>(
+						new GenericBucket(64),
+						getPropertiesInvoker(),
+						getPropertyInvoker(),
+						setPropertyInvoker(),
+						getterInvoker(),
+						setterInvoker(),
+						SerializableProxy.getWriteReplaceMethodInvoker(CglibDeserializationProxyFactory.INSTANCE)
+				),
+				contract, SerializableProxy.class
+		);
+	}
 
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
