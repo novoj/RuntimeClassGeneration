@@ -16,20 +16,20 @@ public interface GenericBucketProxyGenerator {
 	}
 
 	class GenericBucketInvocationHandler implements InvocationHandler {
-		private final GenericBucket genericBucket = new GenericBucket(32);
+		private final GenericBucket genericBucket = new GenericBucket();
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			if (Proxy.class.getDeclaredMethod("getProxyState").equals(method)) {
 				return genericBucket;
-			} else if (method.getName().equals("getProperties")) {
-				return genericBucket;
+			} else if ("getProperties".equals(method.getName())) {
+				return genericBucket.getData();
 			} else if (method.getName().startsWith("get")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				return genericBucket.get(propertyName);
+				return genericBucket.getData().get(propertyName);
 			} else if (method.getName().startsWith("set")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				genericBucket.put(propertyName, args[0]);
+				genericBucket.getData().put(propertyName, args[0]);
 				return null;
 			} else if (Object.class.getDeclaredMethod("hashCode").equals(method)) {
 				return genericBucket.hashCode();

@@ -1,4 +1,4 @@
-package cz.novoj.generation.model.traits;
+package cz.novoj.generation.model;
 
 public interface Person extends PropertyAccessor {
 
