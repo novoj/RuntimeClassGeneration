@@ -121,27 +121,27 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         KeywordContainer keywordAffectingNextKeyword = null;
         for (Keyword keyword : keywords) {
             if (keyword instanceof KeywordContainer) {
-                if (keyword instanceof FilterKeywordContainer && !((FilterKeywordContainer) keyword).affectsNextKeyword()) {
+                if (keyword instanceof FilterKeywordContainer && !((FilterKeywordContainer) keyword).isAffectsNextKeyword()) {
                     if (bareConstant != null) {
-                        acc.addKeywordInstance(bareConstant);
+                        acc.addLeafQueryNode(bareConstant);
                         bareConstant = null;
                     }
-                    acc.addKeywordContainerInstance((KeywordContainer) keyword);
+                    acc.addContainerQueryNode((KeywordContainer) keyword);
                 } else {
                     keywordAffectingNextKeyword = (KeywordContainer) keyword;
                 }
             } else {
                 if (keywordAffectingNextKeyword == null) {
-                    acc.addKeywordInstance(keyword, bareConstant);
+                    acc.addLeafQueryNode(keyword, bareConstant);
                 } else {
-                    acc.addKeywordContainerInstanceWithChild(keywordAffectingNextKeyword, keyword, bareConstant);
+                    acc.addContainerQueryNodeWithChild(keywordAffectingNextKeyword, keyword, bareConstant);
                 }
                 bareConstant = null;
             }
         }
 
         if (bareConstant != null) {
-            acc.addKeywordInstance(bareConstant);
+            acc.addLeafQueryNode(bareConstant);
         }
 
         acc.clearKeywordAdepts();

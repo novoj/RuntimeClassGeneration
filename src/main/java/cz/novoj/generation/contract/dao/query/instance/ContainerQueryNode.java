@@ -6,7 +6,9 @@ import lombok.Data;
 import java.util.LinkedList;
 import java.util.List;
 
-
+/**
+ * Container query node that can contain child query nodes.
+ */
 @Data
 public class ContainerQueryNode implements QueryNode {
     private final KeywordContainer keyword;

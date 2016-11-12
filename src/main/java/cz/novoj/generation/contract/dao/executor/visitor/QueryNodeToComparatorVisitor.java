@@ -42,7 +42,7 @@ public class QueryNodeToComparatorVisitor<U extends PropertyAccessor> implements
 		// create comparator that will compare o1 and o2
 		// according to keyword and property value under specified name
 		final SortKeyword keyword = (SortKeyword)queryNode.getKeyword();
-		final String propertyName = queryNode.getConstant();
+		final String propertyName = queryNode.getPropertyName();
 		comparatorConsumer.peek()
 						  .accept(ComparatorFactory.compare(keyword, propertyName));
     }

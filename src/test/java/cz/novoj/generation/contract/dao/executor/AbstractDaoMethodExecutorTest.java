@@ -138,7 +138,7 @@ public class AbstractDaoMethodExecutorTest {
         QueryNode queryNode = subKeywords.get(index);
         assertTrue(queryNode instanceof LeafQueryNode);
         assertEquals(keyword, queryNode.getKeyword());
-        assertEquals(constant, ((LeafQueryNode) queryNode).getConstant());
+        assertEquals(constant, ((LeafQueryNode) queryNode).getPropertyName());
     }
 
 }

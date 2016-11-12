@@ -4,6 +4,7 @@ import cz.novoj.generation.contract.dao.query.instance.ContainerQueryNode;
 import cz.novoj.generation.contract.dao.query.instance.LeafQueryNode;
 import cz.novoj.generation.contract.dao.query.instance.QueryNode;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword.Purpose;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
@@ -23,11 +24,11 @@ import java.util.List;
 @Data
 public class QueryNodeAccumulator {
     private final Keyword defaultKeyword;
-    private final Keyword.Purpose purpose;
-    private ContainerQueryNode rootKeyword;
-    private LinkedList<String> words = new LinkedList<>();
-    private LinkedList<Keyword> keywordAdepts = new LinkedList<>();
-    @Getter(AccessLevel.NONE)
+    private final Purpose purpose;
+    private final LinkedList<String> words = new LinkedList<>();
+	private final LinkedList<Keyword> keywordAdepts = new LinkedList<>();
+	private ContainerQueryNode rootKeyword;
+	@Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private int constantIndex;
 
@@ -91,39 +92,39 @@ public class QueryNodeAccumulator {
         }
     }
 
-    public void addKeywordContainerInstanceWithChild(KeywordContainer keywordContainer, Keyword keyword, String constant) {
+    public void addContainerQueryNodeWithChild(KeywordContainer keywordContainer, Keyword keyword, String constant) {
         ContainerQueryNode containerInstance = new ContainerQueryNode(keywordContainer);
         containerInstance.addSubKeyword(new LeafQueryNode(keyword, constant, getConstantIndexAndIncrement(keyword)));
-        addKeywordInstance(containerInstance);
+        addLeafQueryNode(containerInstance);
     }
 
-    public void addKeywordContainerInstance(KeywordContainer keywordContainer) {
-        addKeywordInstance(
-                new ContainerQueryNode(keywordContainer)
+    public void addContainerQueryNode(KeywordContainer keywordContainer) {
+        addLeafQueryNode(
+			new ContainerQueryNode(keywordContainer)
         );
     }
 
-    public void addKeywordInstance(Keyword keyword, String constant) {
-        addKeywordInstance(
-                new LeafQueryNode(keyword, constant, getConstantIndexAndIncrement(keyword))
+    public void addLeafQueryNode(Keyword keyword, String constant) {
+        addLeafQueryNode(
+			new LeafQueryNode(keyword, constant, getConstantIndexAndIncrement(keyword))
         );
     }
 
-    public void addKeywordInstance(String constant) {
-        addKeywordInstance(
+    public void addLeafQueryNode(String constant) {
+        addLeafQueryNode(
                 new LeafQueryNode(defaultKeyword, constant, getConstantIndexAndIncrement(defaultKeyword))
         );
     }
 
-    private void addKeywordInstance(LeafQueryNode keywordInstance) {
-        clear(keywordInstance.getConstant());
+    private void addLeafQueryNode(LeafQueryNode keywordInstance) {
+        clear(keywordInstance.getPropertyName());
         this.rootKeyword.addSubKeyword(keywordInstance);
     }
 
-    private void addKeywordInstance(ContainerQueryNode keywordInstance) {
+    private void addLeafQueryNode(ContainerQueryNode keywordInstance) {
 
         if (keywordInstance.getKeyword() instanceof FilterKeywordContainer &&
-                ((FilterKeywordContainer) keywordInstance.getKeyword()).affectsNextKeyword()) {
+                ((FilterKeywordContainer) keywordInstance.getKeyword()).isAffectsNextKeyword()) {
             this.rootKeyword.addSubKeyword(keywordInstance);
         } else {
             if (this.rootKeyword.getKeyword() == keywordInstance.getKeyword()) {

@@ -28,7 +28,7 @@ public abstract class PredicateFactory {
 	 */
 	public static <U extends PropertyAccessor> Predicate<RepositoryItemWithMethodArgs<U>> createPredicate(LeafQueryNode queryNode) {
 		final FilterKeyword keyword = (FilterKeyword)queryNode.getKeyword();
-		final String propertyName = queryNode.getConstant();
+		final String propertyName = queryNode.getPropertyName();
 
 		// translate keyword into predicate returning boolean
 		switch (keyword) {
@@ -120,7 +120,7 @@ public abstract class PredicateFactory {
 	 * @return
 	 */
 	private static <U extends PropertyAccessor> Object getArgumentForPropertyName(LeafQueryNode queryNode, String propertyName, RepositoryItemWithMethodArgs<U> u) {
-		return ofNullable(queryNode.getIndex())
+		return ofNullable(queryNode.getArgIndex())
 				.map(argIndex -> getArgumentFromIndex(propertyName, argIndex, u.getArgs()))
 				.orElse(null);
 	}
