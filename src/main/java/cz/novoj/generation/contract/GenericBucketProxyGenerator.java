@@ -1,5 +1,6 @@
 package cz.novoj.generation.contract;
 
+import cz.novoj.generation.contract.model.GenericBucket;
 import cz.novoj.generation.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
