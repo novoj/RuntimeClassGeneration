@@ -7,14 +7,19 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 
 public interface ProxyStateAccessor {
 
-    Object getProxyState();
+	/**
+	 * Returns internal state of the proxy that is unique to each instance.
+	 * @return
+	 */
+	Object getProxyState();
 
-    static MethodClassification<ProxyStateAccessor, Void, Object> getProxyStateMethodInvoker() {
-        return new MethodClassification<>(
+	/** METHOD CONTRACT: Object getProxyState() **/
+	static MethodClassification<ProxyStateAccessor, Void, Object> getProxyStateMethodInvoker() {
+		return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, ProxyStateAccessor.class, "getProxyState"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxyStateAccessor, method, args, methodContext, proxyState) -> proxyState
-        );
-    }
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+		);
+	}
 
 }
