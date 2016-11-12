@@ -26,10 +26,10 @@ public interface GenericBucketProxyGenerator {
 				return genericBucket.getData();
 			} else if (method.getName().startsWith("get")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				return genericBucket.getData().get(propertyName);
+				return genericBucket.get(propertyName);
 			} else if (method.getName().startsWith("set")) {
 				final String propertyName = StringUtils.uncapitalize(method.getName().substring(3));
-				genericBucket.getData().put(propertyName, args[0]);
+				genericBucket.set(propertyName, args[0]);
 				return null;
 			} else if (Object.class.getDeclaredMethod("hashCode").equals(method)) {
 				return genericBucket.hashCode();

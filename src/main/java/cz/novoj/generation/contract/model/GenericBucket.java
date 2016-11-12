@@ -8,6 +8,14 @@ import java.util.Map;
 public class GenericBucket {
 	@Getter private final Map<String, Object> data = new LinkedHashMap<>(16);
 
+	public Object get(String propertyName) {
+		return data.get(propertyName);
+	}
+
+	public void set(String propertyName, Object propertyValue) {
+		data.put(propertyName, propertyValue);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;
