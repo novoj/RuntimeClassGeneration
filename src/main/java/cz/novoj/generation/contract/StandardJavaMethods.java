@@ -10,6 +10,7 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 
 public interface StandardJavaMethods {
 
+	/** METHOD CONTRACT: String toString() **/
     static MethodClassification<ProxyStateAccessor, Void, Object> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
@@ -18,6 +19,7 @@ public interface StandardJavaMethods {
         );
     }
 
+	/** METHOD CONTRACT: int hashCode() **/
     static MethodClassification<ProxyStateAccessor, Void, Object> hashCodeMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
@@ -26,6 +28,7 @@ public interface StandardJavaMethods {
         );
     }
 
+	/** METHOD CONTRACT: boolean equals(Object o) **/
     static MethodClassification<ProxyStateAccessor, Void, Object> equalsMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
@@ -36,6 +39,7 @@ public interface StandardJavaMethods {
         );
     }
 
+	/** METHOD CONTRACT: catch everything else and throw exception **/
     static CurriedMethodContextInvocationHandler<?, ?> missingImplementationInvoker() {
         return (proxy, method, args, proxyState) -> {
             throw new UnsupportedOperationException(
