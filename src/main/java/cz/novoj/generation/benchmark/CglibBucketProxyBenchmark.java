@@ -9,11 +9,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public class CglibBucketProxyBenchmark {
 
 	@State(Scope.Thread)

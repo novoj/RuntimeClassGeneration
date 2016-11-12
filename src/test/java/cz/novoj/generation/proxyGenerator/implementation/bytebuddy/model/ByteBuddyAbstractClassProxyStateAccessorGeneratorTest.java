@@ -8,11 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public class ByteBuddyAbstractClassProxyStateAccessorGeneratorTest {
 
 	@Test

@@ -5,11 +5,7 @@ import cz.novoj.generation.model.composite.CustomizedPerson;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public class JdkGenericBucketProxyBenchmark {
 
 	@State(Scope.Thread)

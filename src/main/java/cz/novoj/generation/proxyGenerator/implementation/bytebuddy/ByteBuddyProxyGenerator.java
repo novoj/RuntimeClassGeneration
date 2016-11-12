@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.bytebuddy;
 
-import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
+import cz.novoj.generation.contract.model.ProxyStateAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;
@@ -16,11 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 @CommonsLog
 public class ByteBuddyProxyGenerator {
     private static final String INVOCATION_HANDLER_FIELD = "dispatcherInvocationHandler";

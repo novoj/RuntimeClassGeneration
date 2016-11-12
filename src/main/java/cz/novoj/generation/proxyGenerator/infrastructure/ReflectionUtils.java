@@ -21,7 +21,14 @@ public interface ReflectionUtils {
     WeakCache<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_ACCESSOR_CACHE = new WeakCache<>();
     Object MONITOR = new Object();
 
-    static String[] getParameterNames(Method method) {
+	/**
+	 * Retrieves parameter names from the method via. reflection.
+	 * Requires "-parameters" argument to be used during compilation.
+	 *
+	 * @param method
+	 * @return
+	 */
+	static String[] getParameterNames(Method method) {
         final String[] parameterNames = new String[method.getParameterCount()];
         final Parameter[] parameters = method.getParameters();
         for (int i = 0; i < parameters.length; i++) {

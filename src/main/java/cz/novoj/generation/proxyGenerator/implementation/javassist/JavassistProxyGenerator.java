@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.javassist;
 
-import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
+import cz.novoj.generation.contract.model.ProxyStateAccessor;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
@@ -12,11 +12,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
 @CommonsLog
 public class JavassistProxyGenerator {
     private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
@@ -58,6 +53,18 @@ public class JavassistProxyGenerator {
                     }
 
                     // SKIP FINALIZE METHOD OVERRIDE - STAY AWAY FROM TROUBLE :)
+
+					/**
+
+					 In Effective java (2nd edition ) Joshua bloch says,
+
+					 "Oh, and one more thing: there is a severe performance penalty for using finalizers. On my machine, the time
+					 to create and destroy a simple object is about 5.6 ns.
+					 Adding a finalizer increases the time to 2,400 ns. In other words, it is about 430 times slower to create and
+					 destroy objects with finalizers."
+
+					 */
+
                     fct.setFilter(method -> !Objects.equals(method.getName(), "finalize"));
 
                     Class<?> proxyClass = fct.createClass();

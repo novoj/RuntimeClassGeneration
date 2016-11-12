@@ -1,4 +1,6 @@
-package cz.novoj.generation.proxyGenerator.infrastructure;
+package cz.novoj.generation.contract.model;
+
+import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification.*;
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;

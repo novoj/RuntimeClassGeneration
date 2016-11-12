@@ -6,7 +6,7 @@ import cz.novoj.generation.contract.dao.executor.dto.RepositoryItemWithMethodArg
 import cz.novoj.generation.contract.dao.executor.visitor.QueryNodeToComparatorVisitor;
 import cz.novoj.generation.contract.dao.executor.visitor.QueryNodeToPredicateVisitor;
 import cz.novoj.generation.contract.dao.query.instance.QueryNode;
-import cz.novoj.generation.contract.model.PropertyAccessor;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
@@ -46,8 +46,8 @@ public class GetDaoMethodExecutor<T extends PropertyAccessor> extends AbstractDa
     }
 
     @Override
-    public Object apply(GenericBucketRepository<T> repositoryItem, Object[] args) {
-        final Stream<T> mainStream = repositoryItem
+    public Object apply(GenericBucketRepository<T> proxyState, Object[] args) {
+        final Stream<T> mainStream = proxyState
                 .getData()
                 .stream();
 

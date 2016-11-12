@@ -16,7 +16,7 @@ public class JdkProxyDispatcherInvocationHandler<T> extends AbstractDispatcherIn
     /* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public JdkProxyDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
+    public JdkProxyDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?, ?>... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 

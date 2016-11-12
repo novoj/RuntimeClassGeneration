@@ -1,15 +1,11 @@
 package cz.novoj.generation.proxyGenerator.implementation.cglib;
 
-import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
+import cz.novoj.generation.contract.model.ProxyStateAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 @CommonsLog
 public class CglibProxyGenerator {
 

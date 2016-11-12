@@ -7,7 +7,7 @@ import cz.novoj.generation.contract.dao.query.instance.QueryNode;
 import cz.novoj.generation.contract.dao.query.instance.QueryNodeVisitor;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
-import cz.novoj.generation.contract.model.PropertyAccessor;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,7 @@ import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-/**
- * Created by Rodina Novotnych on 06.11.2016.
- */
+
 public class QueryNodeToPredicateVisitor<U extends PropertyAccessor> implements QueryNodeVisitor {
     private final Method method;
     @Getter private Predicate<RepositoryItemWithMethodArgs<U>> predicate;

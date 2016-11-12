@@ -16,7 +16,7 @@ public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherI
     /* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public JavassistDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
+    public JavassistDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?, ?>... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 

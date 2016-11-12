@@ -1,5 +1,6 @@
 package cz.novoj.generation.contract.model;
 
+import cz.novoj.generation.model.traits.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDeserializationProxyFactory;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.bytebuddy.ByteBuddyProxyGenerator;
@@ -13,16 +14,11 @@ import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyDeseri
 import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.implementation.jdkProxy.JdkProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
-import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
 import static org.apache.commons.lang.StringUtils.uncapitalize;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public interface GenericBucketProxyGenerator {
     String GET = "get";
     String SET = "set";

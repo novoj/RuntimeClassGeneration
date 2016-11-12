@@ -22,9 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Rodina Novotnych on 02.11.2016.
- */
+
 @CommonsLog
 public class JavassistPersonDaoTest {
     private PersonDao personDao;
@@ -47,7 +45,19 @@ public class JavassistPersonDaoTest {
         assertEquals(500, personDao.getAll().size());
     }
 
-    @Test
+	@Test
+	public void PersonDao_AddNewPerson_returnsImportedPersonsPlusOne() throws Exception {
+		personDao.add("Jan", "Novotný", LocalDate.of(1978, 5, 5));
+
+		final List<CustomizedPerson> allPersons = personDao.getAll();
+		assertEquals(501, allPersons.size());
+
+		final CustomizedPerson lastPerson = allPersons.get(500);
+		assertEquals("Jan", lastPerson.getFirstName());
+		assertEquals("Novotný", lastPerson.getLastName());
+	}
+
+	@Test
     public void PersonDao_getByFirstNameAndLastName_returnsSinglePerson() throws Exception {
         final CustomizedPerson meredith = personDao.getByFirstNameAndLastName("Meredith", "Campbell");
 

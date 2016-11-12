@@ -8,7 +8,7 @@ import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
-import cz.novoj.generation.contract.model.PropertyAccessor;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Array;
@@ -23,9 +23,7 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * Created by Rodina Novotnych on 06.11.2016.
- */
+
 abstract class AbstractDaoMethodExecutor<T extends PropertyAccessor> implements DaoMethodExecutor<GenericBucketRepository<T>> {
 
     static DaoMethodQuery getKeywordInstances(String methodName) {

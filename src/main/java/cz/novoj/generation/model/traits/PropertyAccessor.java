@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.model;
+package cz.novoj.generation.model.traits;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
@@ -18,11 +18,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 public interface PropertyAccessor {
 	Log log = LogFactory.getLog(PropertyAccessor.class);
 

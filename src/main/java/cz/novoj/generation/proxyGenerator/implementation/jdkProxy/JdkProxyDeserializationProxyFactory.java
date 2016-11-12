@@ -2,12 +2,10 @@ package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
 
 import cz.novoj.generation.contract.model.GenericBucket;
 import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
-import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy;
-import cz.novoj.generation.proxyGenerator.infrastructure.SerializableProxy.DeserializationProxyFactory;
+import cz.novoj.generation.contract.model.SerializableProxy;
+import cz.novoj.generation.contract.model.SerializableProxy.DeserializationProxyFactory;
 
-/**
- * Created by Rodina Novotnych on 29.10.2016.
- */
+
 public class JdkProxyDeserializationProxyFactory implements DeserializationProxyFactory<GenericBucket> {
 	private static final long serialVersionUID = -3759232220601629153L;
 	public static final DeserializationProxyFactory<GenericBucket> INSTANCE = new JdkProxyDeserializationProxyFactory();

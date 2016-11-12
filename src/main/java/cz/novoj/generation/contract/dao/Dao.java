@@ -3,14 +3,35 @@ package cz.novoj.generation.contract.dao;
 import java.util.List;
 
 /**
- * Created by Rodina Novotnych on 31.10.2016.
+ * Generic DAO repository interface.
+ * @param <T>
  */
 public interface Dao<T> {
 
+	/**
+	 * Returns class of the items managed by this repository.
+	 * @return
+	 */
     Class<T> getContractClass();
 
-    T createNew();
+	/**
+	 * Creates new empty item of the type this repository works with.
+	 * Item is only created, it is not added to the repository.
+	 *
+	 * @return
+	 */
+	T createNew();
 
+	/**
+	 * Adds new item of the target type to the repository.
+	 * @param item
+	 */
+	void add(T item);
+
+	/**
+	 * Returns all items in the repoaitory.
+	 * @return
+	 */
     List<T> getAll();
 
 }

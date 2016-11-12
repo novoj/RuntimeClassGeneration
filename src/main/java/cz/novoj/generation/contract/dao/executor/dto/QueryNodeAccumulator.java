@@ -17,9 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by Rodina Novotnych on 06.11.2016.
- */
+
 @Data
 public class QueryNodeAccumulator {
     private final Keyword defaultKeyword;

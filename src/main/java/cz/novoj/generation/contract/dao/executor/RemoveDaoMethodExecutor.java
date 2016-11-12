@@ -5,7 +5,7 @@ import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
 import cz.novoj.generation.contract.dao.executor.dto.RepositoryItemWithMethodArgs;
 import cz.novoj.generation.contract.dao.executor.visitor.QueryNodeToPredicateVisitor;
 import cz.novoj.generation.contract.dao.query.instance.QueryNode;
-import cz.novoj.generation.contract.model.PropertyAccessor;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -39,8 +39,8 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
         return visitor.getPredicate();
     }
 
-    public Object apply(GenericBucketRepository<T> repositoryItem, Object[] args) {
-        final Stream<T> mainStream = repositoryItem
+    public Object apply(GenericBucketRepository<T> proxyState, Object[] args) {
+        final Stream<T> mainStream = proxyState
                 .getData()
                 .stream();
 
@@ -54,7 +54,7 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
         // compute result (at the and data would be already altered)
         final Object result = resultTransformer.apply(filteredStream, args);
 
-        final Stream<T> streamForRemoval = repositoryItem
+        final Stream<T> streamForRemoval = proxyState
                 .getData()
                 .stream();
 
@@ -64,9 +64,9 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
                         streamForRemoval
                                 .filter(t -> !predicate.test(new RepositoryItemWithMethodArgs<>(t, args)))
                                 .collect(Collectors.toCollection(() -> (List<T>)new LinkedList<T>()))
-                ).orElse(repositoryItem.getData());
+                ).orElse(proxyState.getData());
 
-        repositoryItem.resetDataTo(filteredData);
+        proxyState.resetDataTo(filteredData);
 
         return result;
     }

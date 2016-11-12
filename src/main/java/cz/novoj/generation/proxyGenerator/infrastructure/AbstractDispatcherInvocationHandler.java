@@ -1,6 +1,7 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
 import cz.novoj.generation.contract.StandardJavaMethods;
+import cz.novoj.generation.contract.model.ProxyStateAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.lang.reflect.Method;
@@ -13,7 +14,7 @@ public abstract class AbstractDispatcherInvocationHandler<T> {
 	/* proxyState object unique to each proxy instance */
 	protected final T proxyState;
 	/* ordered list of method classifications - ie atomic features of the proxy */
-	private final List<MethodClassification<?, ?,?>> methodClassifications = new LinkedList<>();
+	private final List<MethodClassification<?, ?, ?>> methodClassifications = new LinkedList<>();
 
     protected AbstractDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
 		this.proxyState = proxyState;
@@ -29,8 +30,8 @@ public abstract class AbstractDispatcherInvocationHandler<T> {
 		Collections.addAll(this.methodClassifications, methodClassifications);
     }
 
-    @SuppressWarnings("unchecked")
-	protected CurriedMethodContextInvocationHandler<?,?> getCurriedMethodContextInvocationHandler(Method method) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+	protected CurriedMethodContextInvocationHandler getCurriedMethodContextInvocationHandler(Method method) {
         log.info("Creating proxy method handler for " + method.toGenericString());
         return methodClassifications.stream()
                 //find proper method classification (invoker handler) for passed method

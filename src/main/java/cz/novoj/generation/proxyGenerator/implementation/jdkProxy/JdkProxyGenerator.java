@@ -1,6 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
 
-import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
+import cz.novoj.generation.contract.model.ProxyStateAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.lang.reflect.Constructor;
@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * No documentation needed, just look at the methods.
- *
- * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
- */
+
 @CommonsLog
 public class JdkProxyGenerator {
     private static final Map<List<Class<?>>, Class<?>> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);

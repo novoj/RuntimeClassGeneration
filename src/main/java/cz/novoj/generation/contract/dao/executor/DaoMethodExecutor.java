@@ -4,11 +4,11 @@ package cz.novoj.generation.contract.dao.executor;
 interface DaoMethodExecutor<T> {
 
 	/**
-	 * Applies arguments on repository item (ie. proxy).
-	 * @param repositoryItem
+	 * Applies method call arguments on proxy state (ie. repository or repository item).
+	 * @param proxyState
 	 * @param args
 	 * @return
 	 */
-    Object apply(T repositoryItem, Object[] args);
+    Object apply(T proxyState, Object... args);
 
 }

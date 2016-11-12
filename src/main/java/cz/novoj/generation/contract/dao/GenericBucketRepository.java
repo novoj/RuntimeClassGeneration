@@ -1,14 +1,12 @@
 package cz.novoj.generation.contract.dao;
 
-import cz.novoj.generation.contract.model.PropertyAccessor;
+import cz.novoj.generation.model.traits.PropertyAccessor;
 import lombok.Getter;
 
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by Rodina Novotnych on 02.11.2016.
- */
+@SuppressWarnings("InstanceMethodNamingConvention")
 public class GenericBucketRepository<T extends PropertyAccessor> {
     @Getter private List<T> data = new LinkedList<>();
 

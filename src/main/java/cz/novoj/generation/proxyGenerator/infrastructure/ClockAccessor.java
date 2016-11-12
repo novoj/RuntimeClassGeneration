@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+/**
+ * Helper class to work with JDK Date Time API and to allow setting fixed time in tests.
+ */
 public class ClockAccessor {
 	private static final ClockAccessor INSTANCE = new ClockAccessor();
 	private Clock currentClock;
@@ -21,32 +24,12 @@ public class ClockAccessor {
 		return currentClock == null ? Clock.systemDefaultZone() : currentClock;
 	}
 
-	public void setCurrentClock(Clock currentClock) {
-		this.currentClock = currentClock;
-	}
-
 	public LocalDate today() {
 		return LocalDate.now(getCurrentClock());
 	}
 
-	public LocalDate today(ZoneId zoneId) {
-		return currentClock == null && zoneId != null ? LocalDate.now(zoneId) : today();
-	}
-
 	public LocalDateTime now() {
 		return LocalDateTime.now(getCurrentClock());
-	}
-
-	public LocalDateTime now(ZoneId zoneId) {
-		return currentClock == null && zoneId != null ? LocalDateTime.now(zoneId) : now();
-	}
-
-	public LocalDateTime nextMinute() {
-		return LocalDateTime.now(getCurrentClock()).withSecond(0).withNano(0).plusMinutes(1);
-	}
-
-	public LocalDateTime lastMinute() {
-		return LocalDateTime.now(getCurrentClock()).withSecond(0).withNano(0).minusMinutes(1);
 	}
 
 }
