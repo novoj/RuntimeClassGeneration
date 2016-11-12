@@ -2,7 +2,9 @@ package cz.novoj.generation.contract.dao.query.keyword.sort;
 
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 
-
+/**
+ * Sorting leaf keywords.
+ */
 public enum SortKeyword implements Keyword {
 
     Asc,
@@ -13,8 +15,8 @@ public enum SortKeyword implements Keyword {
     }
 
     @Override
-    public Kind getKind() {
-        return Kind.Sort;
+    public Purpose getPurpose() {
+        return Purpose.Sort;
     }
 
 }

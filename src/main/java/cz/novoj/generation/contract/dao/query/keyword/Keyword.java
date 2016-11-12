@@ -1,5 +1,6 @@
 package cz.novoj.generation.contract.dao.query.keyword;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,36 +8,70 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-
+/**
+ * Keyword recognized by the query AST.
+ */
 public interface Keyword {
 
-    enum Kind { Filter, Sort }
-    enum Type { Leaf, Container }
+	/**
+	 * Purpose of the keyword.
+	 */
+    enum Purpose { Filter, Sort }
 
-    Map<Kind, Map<String, Keyword>> ALL_KEYWORDS = new HashMap<>(Kind.values().length);
+	/**
+	 * Type of the keyword - ie. whether query node connected to this keyword can have child nodes or not.
+	 */
+	enum Type { Leaf, Container }
 
-    static void registerKeyword(Keyword keyword) {
-        synchronized (ALL_KEYWORDS) {
-            Map<String, Keyword> keywordMap = ALL_KEYWORDS.computeIfAbsent(keyword.getKind(), kind -> new HashMap<>(64));
-            keywordMap.put(keyword.name(), keyword);
-        }
-    }
+	/**
+	 * Hack so that we can iterate over all existing keywords.
+	 */
+    Map<Purpose, Map<String, Keyword>> ALL_KEYWORDS = new EnumMap<>(Purpose.class);
 
-    String name();
+	/**
+	 * Name of the keyword - such as equals, lessThan, and etc.
+	 * @return
+	 */
+	String name();
 
-    Kind getKind();
+	/**
+	 * Purpose of the keyword - ie. whether it is aimed for filtering or sorting.
+	 * @return
+	 */
+    Purpose getPurpose();
 
-    default Type getType() {
+	/**
+	 * Type of the keyword - leaf or container.
+	 * @return
+	 */
+	default Type getType() {
         return Type.Leaf;
     }
 
-    static Keyword findKeyword(Kind kind, List<String> keywords) {
-        final StringBuilder composite = new StringBuilder();
+	/**
+	 * Method that is called by each keyword upon instantiation.
+	 * @param keyword
+	 */
+	static void registerKeyword(Keyword keyword) {
+		synchronized (ALL_KEYWORDS) {
+			Map<String, Keyword> keywordMap = ALL_KEYWORDS.computeIfAbsent(keyword.getPurpose(), kind -> new HashMap<>(64));
+			keywordMap.put(keyword.name(), keyword);
+		}
+	}
+
+	/**
+	 * Finds keyword that consists of maximum count of words passed in argument
+	 * @param purpose
+	 * @param words
+	 * @return
+	 */
+    static Keyword findKeyword(Purpose purpose, List<String> words) {
+        final StringBuilder composite = new StringBuilder(128);
         Keyword longestKeyword = null;
-        for (int i = keywords.size() - 1; i >= 0; i--) {
-            final String keywordName = keywords.get(i);
+        for (int i = words.size() - 1; i >= 0; i--) {
+            final String keywordName = words.get(i);
             composite.insert(0, keywordName);
-            Optional<Keyword> keyword = ofNullable(ALL_KEYWORDS.get(kind)).map(kMap -> kMap.get(composite.toString()));
+            Optional<Keyword> keyword = ofNullable(ALL_KEYWORDS.get(purpose)).map(kMap -> kMap.get(composite.toString()));
             if (keyword.isPresent()) {
                 longestKeyword = keyword.get();
             }

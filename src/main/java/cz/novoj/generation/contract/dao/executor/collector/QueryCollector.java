@@ -4,7 +4,7 @@ import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
 import cz.novoj.generation.contract.dao.executor.dto.QueryNodeAccumulator;
 import cz.novoj.generation.contract.dao.executor.dto.QueryAccumulator;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
-import cz.novoj.generation.contract.dao.query.keyword.Keyword.Kind;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword.Purpose;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
@@ -29,7 +29,7 @@ import static java.util.Optional.ofNullable;
  *
  */
 public class QueryCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
-    private final AbstractMap<Kind, String> kindPrefixes = new EnumMap<>(Kind.class);
+    private final AbstractMap<Purpose, String> kindPrefixes = new EnumMap<>(Purpose.class);
     private final FilterKeywordContainer defaultFilterContainer;
     private final FilterKeyword defaultFilterKeyword;
     private final SortKeywordContainer defaultSortContainer;
@@ -45,8 +45,8 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         this.defaultFilterKeyword = defaultFilterKeyword;
         this.defaultSortContainer = defaultSortContainer;
         this.defaultSortKeyword = defaultSortKeyword;
-        kindPrefixes.put(Kind.Filter, "By");
-        kindPrefixes.put(Kind.Sort, "SortedBy");
+        kindPrefixes.put(Purpose.Filter, "By");
+        kindPrefixes.put(Purpose.Sort, "SortedBy");
     }
 
     @Override
@@ -64,18 +64,18 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
             final List<String> accumulatedWords = activeAcc.map(QueryNodeAccumulator::getWords).orElse(acc.getUnrecognizedWords());
             final List<Keyword> keywordAdepts = activeAcc.map(QueryNodeAccumulator::getKeywordAdepts).orElse(Collections.emptyList());
 
-            final Keyword keyword = activeAcc.map(kiAcc -> findKeyword(s, accumulatedWords, kiAcc.getKind())).orElse(null);
-            final Kind kindPrefix = findKindPrefix(s, accumulatedWords);
+            final Keyword keyword = activeAcc.map(kiAcc -> findKeyword(s, accumulatedWords, kiAcc.getPurpose())).orElse(null);
+            final Purpose purposePrefix = findKindPrefix(s, accumulatedWords);
 
-            if (kindPrefix != null) {
+            if (purposePrefix != null) {
                 activeAcc.ifPresent(kia -> {
                     kia.addWord(s);
-                    kia.clear(kindPrefixes.get(kindPrefix));
+                    kia.clear(kindPrefixes.get(purposePrefix));
                     if (!accumulatedWords.isEmpty()) {
                         registerKeywordInstance(kia, keywordAdepts);
                     }
                 });
-                acc.switchAccumulator(kindPrefix);
+                acc.switchAccumulator(purposePrefix);
                 return;
             } else if (keyword != null) {
                 activeAcc.ifPresent(kia -> kia.addKeywordAdept(keyword));
@@ -147,14 +147,14 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         acc.clearKeywordAdepts();
     }
 
-    private Kind findKindPrefix(String currentWord, List<String> words) {
+    private Purpose findKindPrefix(String currentWord, List<String> words) {
         final StringBuilder sb = new StringBuilder(128);
         words.forEach(sb::append);
         sb.append(currentWord);
         final String composedWord = sb.toString();
-        Kind result = null;
+        Purpose result = null;
         String resultPrefix = null;
-        for (Entry<Kind, String> entry : kindPrefixes.entrySet()) {
+        for (Entry<Purpose, String> entry : kindPrefixes.entrySet()) {
             if (composedWord.endsWith(entry.getValue())) {
                 if (result == null || resultPrefix.length() < entry.getValue().length()) {
                     result = entry.getKey();
@@ -165,10 +165,10 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         return result;
     }
 
-    private Keyword findKeyword(String currentWord, List<String> words, Kind kind) {
+    private Keyword findKeyword(String currentWord, List<String> words, Purpose purpose) {
         final List<String> constant = new ArrayList<>(words);
         constant.add(currentWord);
-        return Keyword.findKeyword(kind, constant);
+        return Keyword.findKeyword(purpose, constant);
     }
 
     private static String getComposedName(List<Keyword> keywords) {

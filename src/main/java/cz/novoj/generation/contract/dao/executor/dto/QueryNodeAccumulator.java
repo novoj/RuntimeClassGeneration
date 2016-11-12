@@ -23,7 +23,7 @@ import java.util.List;
 @Data
 public class QueryNodeAccumulator {
     private final Keyword defaultKeyword;
-    private final Keyword.Kind kind;
+    private final Keyword.Purpose purpose;
     private ContainerQueryNode rootKeyword;
     private LinkedList<String> words = new LinkedList<>();
     private LinkedList<Keyword> keywordAdepts = new LinkedList<>();
@@ -34,7 +34,7 @@ public class QueryNodeAccumulator {
     public QueryNodeAccumulator(KeywordContainer defaultContainer, Keyword defaultKeyword) {
         this.rootKeyword = new ContainerQueryNode(defaultContainer);
         this.defaultKeyword = defaultKeyword;
-        this.kind = defaultContainer.getKind();
+        this.purpose = defaultContainer.getPurpose();
     }
 
     public List<String> getWords() {

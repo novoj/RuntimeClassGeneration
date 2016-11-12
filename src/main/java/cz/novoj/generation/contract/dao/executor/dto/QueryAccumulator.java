@@ -1,6 +1,6 @@
 package cz.novoj.generation.contract.dao.executor.dto;
 
-import cz.novoj.generation.contract.dao.query.keyword.Keyword.Kind;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword.Purpose;
 import lombok.Data;
 
 import java.util.LinkedList;
@@ -20,9 +20,9 @@ public class QueryAccumulator {
         this.activeAccumulator = null;
     }
 
-    public void switchAccumulator(Kind kind) {
+    public void switchAccumulator(Purpose purpose) {
         for (QueryNodeAccumulator accumulator : accumulators) {
-            if (accumulator.getKind() == kind) {
+            if (accumulator.getPurpose() == purpose) {
                 this.activeAccumulator = accumulator;
             }
         }

@@ -3,7 +3,9 @@ package cz.novoj.generation.contract.dao.query.keyword.filter;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import lombok.Getter;
 
-
+/**
+ * Leaf filtering keywords.
+ */
 public enum FilterKeyword implements Keyword {
 
     Eq(true),
@@ -16,8 +18,8 @@ public enum FilterKeyword implements Keyword {
     IsNotNull(false),
     In(true);
 
-    @Getter
-    final boolean requiresArgument;
+    // returns true is it needs to be accompanied by argument in method signature
+    @Getter final boolean requiresArgument;
 
     FilterKeyword(boolean requiresArgument) {
         Keyword.registerKeyword(this);
@@ -25,8 +27,8 @@ public enum FilterKeyword implements Keyword {
     }
 
     @Override
-    public Kind getKind() {
-        return Kind.Filter;
+    public Purpose getPurpose() {
+        return Purpose.Filter;
     }
 
 }

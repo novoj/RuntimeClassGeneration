@@ -2,15 +2,19 @@ package cz.novoj.generation.contract.dao.query.keyword.filter;
 
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
+import lombok.Getter;
 
-
+/**
+ * Filter container keywords.
+ */
 public enum FilterKeywordContainer implements KeywordContainer {
 
     And(false),
     Or(false),
     Not(true);
 
-    private final boolean affectsNextKeyword;
+    // required for proper parsing keywords into the tree
+    @Getter private final boolean affectsNextKeyword;
 
     FilterKeywordContainer(boolean affectsNextKeyword) {
         Keyword.registerKeyword(this);
@@ -18,11 +22,8 @@ public enum FilterKeywordContainer implements KeywordContainer {
     }
 
     @Override
-    public Kind getKind() {
-        return Kind.Filter;
+    public Purpose getPurpose() {
+        return Purpose.Filter;
     }
 
-    public boolean affectsNextKeyword() {
-        return affectsNextKeyword;
-    }
 }

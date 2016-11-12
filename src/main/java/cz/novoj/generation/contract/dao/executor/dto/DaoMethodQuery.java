@@ -12,7 +12,7 @@ public class DaoMethodQuery {
 
     public DaoMethodQuery(QueryNodeAccumulator... accumulators) {
         for (QueryNodeAccumulator accumulator : accumulators) {
-            switch (accumulator.getKind()) {
+            switch (accumulator.getPurpose()) {
                 case Filter: filter = accumulator.getFinalKeyword(); break;
                 case Sort: sort = accumulator.getFinalKeyword(); break;
             }
