@@ -26,6 +26,8 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
 	@Override
 	public abstract void add(CustomizedPerson item);
 
+	public abstract void add(String firstName, String lastName, LocalDate birthDate);
+
 	@Override
 	public abstract List<CustomizedPerson> getAll();
 

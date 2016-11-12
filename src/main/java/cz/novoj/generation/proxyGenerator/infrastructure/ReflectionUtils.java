@@ -4,8 +4,29 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 public interface ReflectionUtils {
+
+	/**
+	 * Retrieves parameter names from the method via. reflection.
+	 * Requires "-parameters" argument to be used during compilation.
+	 *
+	 * @param method
+	 * @return
+	 */
+	static String[] getParameterNames(Method method) {
+		final String[] parameterNames = new String[method.getParameterCount()];
+		final Parameter[] parameters = method.getParameters();
+		for (int i = 0; i < parameters.length; i++) {
+			final Parameter param = parameters[i];
+			if (!param.isNamePresent()) {
+				throw new IllegalStateException("Source code is not compiled with -parameters argument!");
+			}
+			parameterNames[i] = param.getName();
+		}
+		return parameterNames;
+	}
 
 	/**
 	 * Returns true if method equals method onClass with the same name and same parameters.

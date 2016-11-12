@@ -8,7 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,5 +35,17 @@ public class JavassistPersonDaoTest {
     public void PersonDao_GetAll_returnsAllPersons() throws Exception {
         assertEquals(500, personDao.getAll().size());
     }
+
+	@Test
+	public void PersonDao_AddNewPerson_returnsImportedPersonsPlusOne() throws Exception {
+		personDao.add("Jan", "Novotný", LocalDate.of(1978, 5, 5));
+
+		final List<CustomizedPerson> allPersons = personDao.getAll();
+		assertEquals(501, allPersons.size());
+
+		final CustomizedPerson lastPerson = allPersons.get(500);
+		assertEquals("Jan", lastPerson.getFirstName());
+		assertEquals("Novotný", lastPerson.getLastName());
+	}
 
 }
