@@ -1,9 +1,11 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
+import javassist.util.proxy.ProxyObject;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
@@ -14,15 +16,15 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 public interface SerializableProxy extends Serializable {
     Set<Class> EXCLUDED_CLASSES = new HashSet<>(
             Arrays.asList(
-                    java.lang.reflect.Proxy.class,
-                    javassist.util.proxy.ProxyObject.class,
-                    Proxy.class
+                    Proxy.class,
+                    ProxyObject.class,
+                    ProxyStateAccessor.class
             )
     );
 
     Object writeReplace() throws ObjectStreamException;
 
-    static <T> MethodClassification<Void, T, Proxy> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
+    static <T> MethodClassification<Void, T, ProxyStateAccessor> getWriteReplaceMethodInvoker(DeserializationProxyFactory<T> deserializationProxyFactory) {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, SerializableProxy.class, "writeReplace"),
         /* methodContext */ method -> null,
@@ -51,19 +53,19 @@ public interface SerializableProxy extends Serializable {
     }
 
     @CommonsLog
-    class SerializableProxyDescriptor implements Serializable {
+    class SerializableProxyDescriptor<T> implements Serializable {
         private static final long serialVersionUID = 8401525823871149500L;
-        private final Class[] interfaces;
-        private final Object target;
-        private final DeserializationProxyFactory deserializationProxyFactory;
+        private final Class<?>[] interfaces;
+        private final T target;
+        private final DeserializationProxyFactory<T> deserializationProxyFactory;
 
-        private SerializableProxyDescriptor(Class[] interfaces, Object target, DeserializationProxyFactory deserializationProxyFactory) {
+        private SerializableProxyDescriptor(Class<?>[] interfaces, T target, DeserializationProxyFactory<T> deserializationProxyFactory) {
             this.interfaces = interfaces;
             this.target = target;
             this.deserializationProxyFactory = deserializationProxyFactory;
         }
 
-        public Object readResolve() throws ObjectStreamException {
+        protected Object readResolve() throws ObjectStreamException {
             return deserializationProxyFactory.deserialize(target, interfaces);
         }
 
@@ -71,7 +73,7 @@ public interface SerializableProxy extends Serializable {
 
     interface DeserializationProxyFactory<T> extends Serializable {
 
-        Object deserialize(T target, Class[] interfaces);
+        Object deserialize(T target, Class<?>[] interfaces);
 
     }
 

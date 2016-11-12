@@ -5,13 +5,13 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 /**
  * Created by Rodina Novotnych on 28.10.2016.
  */
-public interface Proxy {
+public interface ProxyStateAccessor {
 
     Object getProxyState();
 
-    static MethodClassification<Void, Object, Proxy> getProxyStateMethodInvoker() {
+    static MethodClassification<Void, Object, ProxyStateAccessor> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
-        /* matcher */       method -> isMethodDeclaredOn(method, Proxy.class, "getProxyState"),
+        /* matcher */       method -> isMethodDeclaredOn(method, ProxyStateAccessor.class, "getProxyState"),
         /* methodContext */ method -> null,
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
         );

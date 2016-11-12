@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class CglibSerializationTest {
 
 	@Test
-	public void JavassistGenerator_ProxySerialization_DeserializedCopyEqualsOriginal() throws Exception {
+	public void CglibGenerator_ProxySerialization_DeserializedCopyEqualsOriginal() throws Exception {
 		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
         final ByteArrayOutputStream serializedProxy = new ByteArrayOutputStream();

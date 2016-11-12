@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JdkProxySerializationTest {
+public class JdkProxyStateAccessorSerializationTest {
 
 	@Test
 	public void JdkProxyGenerator_ProxySerialization_DeserializedCopyEqualsOriginal() throws Exception {

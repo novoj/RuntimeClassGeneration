@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class CglibAbstractClassProxyGeneratorTest {
+public class CglibAbstractClassProxyStateAccessorGeneratorTest {
 
 	@Test
 	public void JavassistGenerator_ProxyAbstract_Created() throws Exception {

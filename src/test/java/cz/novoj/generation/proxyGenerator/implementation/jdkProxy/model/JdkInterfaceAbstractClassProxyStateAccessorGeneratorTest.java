@@ -9,7 +9,7 @@ import org.junit.Test;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JdkInterfaceAbstractClassProxyGeneratorTest {
+public class JdkInterfaceAbstractClassProxyStateAccessorGeneratorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void JdkProxyGenerator_ProxyAbstract_Created() throws Exception {

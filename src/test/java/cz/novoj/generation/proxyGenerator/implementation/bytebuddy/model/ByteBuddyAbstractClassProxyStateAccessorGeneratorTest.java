@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class ByteBuddyAbstractClassProxyGeneratorTest {
+public class ByteBuddyAbstractClassProxyStateAccessorGeneratorTest {
 
 	@Test
 	public void ByteBuddyGenerator_ProxyAbstract_Created() throws Exception {

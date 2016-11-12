@@ -42,15 +42,17 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(SET) && method.getParameterCount() == 1,
         /* methodContext */ method -> uncapitalize(method.getName().substring(SET.length())),
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(methodContext, args[0])
-        );
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        	proxyState.set(methodContext, args[0]);
+			return null;
+		});
     }
 
     static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTIES),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.getData()
         );
     }
 
@@ -58,22 +60,26 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(args[0])
-        );
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        	proxyState.get(String.valueOf(args[0]));
+        	return null;
+		});
     }
 
     static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, SET_PROPERTY, String.class, Object.class),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.put(String.valueOf(args[0]), args[1])
-        );
+        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        	proxyState.set(String.valueOf(args[0]), args[1]);
+		    return null;
+		});
     }
 
     static <T> T instantiateJdkProxy(Class<T> contract) {
         return JdkProxyGenerator.instantiate(
                 new JdkProxyDispatcherInvocationHandler<>(
-                        new GenericBucket(64),
+                        new GenericBucket(),
                         getPropertiesInvoker(),
                         getPropertyInvoker(),
                         setPropertyInvoker(),
@@ -88,7 +94,7 @@ public interface GenericBucketProxyGenerator {
 	static <T> T instantiateCglibProxy(Class<T> contract) {
 		return CglibProxyGenerator.instantiate(
 				new CglibDispatcherInvocationHandler<>(
-						new GenericBucket(64),
+						new GenericBucket(),
 						getPropertiesInvoker(),
 						getPropertyInvoker(),
 						setPropertyInvoker(),
@@ -103,7 +109,7 @@ public interface GenericBucketProxyGenerator {
     static <T> T instantiateJavassistProxy(Class<T> contract) {
         return JavassistProxyGenerator.instantiate(
                 new JavassistDispatcherInvocationHandler<>(
-                        new GenericBucket(64),
+                        new GenericBucket(),
                         getPropertiesInvoker(),
                         getPropertyInvoker(),
                         setPropertyInvoker(),
@@ -117,7 +123,7 @@ public interface GenericBucketProxyGenerator {
     static <T> T instantiateByteBuddyProxy(Class<T> contract) {
         return ByteBuddyProxyGenerator.instantiate(
                 new ByteBuddyDispatcherInvocationHandler<>(
-                        new GenericBucket(64),
+                        new GenericBucket(),
                         getPropertiesInvoker(),
                         getPropertyInvoker(),
                         setPropertyInvoker(),

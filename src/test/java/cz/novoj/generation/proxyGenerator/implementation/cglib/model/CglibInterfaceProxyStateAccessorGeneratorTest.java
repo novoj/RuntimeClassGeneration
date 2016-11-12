@@ -1,4 +1,4 @@
-package cz.novoj.generation.proxyGenerator.implementation.javassist.model;
+package cz.novoj.generation.proxyGenerator.implementation.cglib.model;
 
 import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.composite.CustomizedPerson;
@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  *
  * @author Jan Novotný (novotny@fg.cz), FG Forrest a.s. (c) 2016
  */
-public class JavassistInterfaceProxyGeneratorTest {
+public class CglibInterfaceProxyStateAccessorGeneratorTest {
 
 	@Test
 	public void JavassistGenerator_Proxy_Created() throws Exception {
@@ -66,7 +66,7 @@ public class JavassistInterfaceProxyGeneratorTest {
 	public void JavassistGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
 		final CustomizedPerson person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("{lastName=Novotný, birthDate=1978-05-05, firstName=Jan}", person.toString());
+		assertEquals("{firstName=Jan, lastName=Novotný, birthDate=1978-05-05}", person.toString());
 	}
 
 	@Test

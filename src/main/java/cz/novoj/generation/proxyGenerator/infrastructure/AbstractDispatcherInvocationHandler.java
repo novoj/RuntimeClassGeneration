@@ -23,7 +23,7 @@ public class AbstractDispatcherInvocationHandler<T> {
         this.methodClassifications.add(StandardJavaMethods.toStringMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.defaultMethodInvoker());
         this.methodClassifications.add(StandardJavaMethods.realMethodInvoker());
-        this.methodClassifications.add(Proxy.getProxyStateMethodInvoker());
+        this.methodClassifications.add(ProxyStateAccessor.getProxyStateMethodInvoker());
         Collections.addAll(this.methodClassifications, methodClassifications);
     }
 

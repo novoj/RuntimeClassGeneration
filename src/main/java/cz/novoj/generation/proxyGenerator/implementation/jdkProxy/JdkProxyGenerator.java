@@ -1,5 +1,6 @@
 package cz.novoj.generation.proxyGenerator.implementation.jdkProxy;
 
+import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.lang.reflect.Constructor;
@@ -18,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @CommonsLog
 public final class JdkProxyGenerator {
-    private static Map<List<Class>, Class> cachedProxyClasses = new ConcurrentHashMap<>(64);
-    private static Map<Class, Constructor> cachedProxyConstructors = new ConcurrentHashMap<>(64);
+    private static final Map<List<Class>, Class> CACHED_PROXY_CLASSES = new ConcurrentHashMap<>(64);
+    private static final Map<Class, Constructor> CACHED_PROXY_CONSTRUCTORS = new ConcurrentHashMap<>(64);
 
     public static <T> T instantiate(InvocationHandler invocationHandler, Class... interfaces) {
         return instantiateProxy(
@@ -29,11 +30,14 @@ public final class JdkProxyGenerator {
     }
 
     private static Class getProxyClass(Class... contract) {
-        return cachedProxyClasses.computeIfAbsent(
+		// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
+        return CACHED_PROXY_CLASSES.computeIfAbsent(
+				// CACHE KEY
                 Arrays.asList(contract),
+				// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
                 classes -> {
-                    Class[] interfaces = new Class[contract.length + 1];
-                    interfaces[0] = cz.novoj.generation.proxyGenerator.infrastructure.Proxy.class;
+                    Class<?>[] interfaces = new Class[contract.length + 1];
+                    interfaces[0] = ProxyStateAccessor.class;
                     System.arraycopy(contract, 0, interfaces, 1, contract.length);
 
                     Class<?> proxyClass = Proxy.getProxyClass(JdkProxyGenerator.class.getClassLoader(), interfaces);
@@ -45,18 +49,22 @@ public final class JdkProxyGenerator {
     @SuppressWarnings("unchecked")
     private static <T> T instantiateProxy(Class proxyClass, InvocationHandler invocationHandler) {
         try {
-            Constructor constructor = cachedProxyConstructors.computeIfAbsent(
-                    proxyClass, aClass -> {
+			// COMPUTE IF ABSENT = GET FROM MAP, IF MISSING -> COMPUTE, STORE AND RETURN RESULT OF LAMBDA
+            Constructor<T> constructor = CACHED_PROXY_CONSTRUCTORS.computeIfAbsent(
+					// CACHE KEY
+                    proxyClass,
+					// LAMBDA THAT FINDS OUT MISSING CONSTRUCTOR
+					aClass -> {
                         try {
                             return proxyClass.getConstructor(InvocationHandler.class);
                         } catch (NoSuchMethodException e) {
-                            throw new RuntimeException("What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e);
+                            throw new IllegalArgumentException("What the heck? Can't find proper constructor on proxy: " + e.getMessage(), e);
                         }
                     }
             );
-            return (T) constructor.newInstance(invocationHandler);
+            return constructor.newInstance(invocationHandler);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("What the heck? Can't create proxy: " + e.getMessage(), e);
+            throw new IllegalArgumentException("What the heck? Can't create proxy: " + e.getMessage(), e);
         }
     }
 

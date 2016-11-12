@@ -2,7 +2,7 @@ package cz.novoj.generation.contract;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.ContextWiseMethodInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
-import cz.novoj.generation.proxyGenerator.infrastructure.Proxy;
+import cz.novoj.generation.proxyGenerator.infrastructure.ProxyStateAccessor;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
@@ -46,7 +46,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object, Proxy> toStringMethodInvoker() {
+    static MethodClassification<Void, Object, ProxyStateAccessor> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
         /* methodContext */ NO_CONTEXT,
@@ -54,7 +54,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object, Proxy> hashCodeMethodInvoker() {
+    static MethodClassification<Void, Object, ProxyStateAccessor> hashCodeMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
         /* methodContext */ NO_CONTEXT,
@@ -62,13 +62,13 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object, Proxy> equalsMethodInvoker() {
+    static MethodClassification<Void, Object, ProxyStateAccessor> equalsMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
         /* methodContext */ NO_CONTEXT,
         /* invocation */    (proxy, method, args, methodContext, proxyState) ->
                                         proxy.getClass().equals(args[0].getClass()) &&
-                                        proxyState.equals(((Proxy)args[0]).getProxyState())
+                                        proxyState.equals(((ProxyStateAccessor)args[0]).getProxyState())
         );
     }
 
