@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.model;
+package cz.novoj.generation.contract;
 
 import cz.novoj.generation.model.traits.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;

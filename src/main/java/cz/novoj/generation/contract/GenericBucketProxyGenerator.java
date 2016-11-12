@@ -1,12 +1,10 @@
-package cz.novoj.generation.contract.model;
+package cz.novoj.generation.contract;
 
-import cz.novoj.generation.model.traits.PropertyAccessor;
+import cz.novoj.generation.contract.model.GenericBucket;
+import cz.novoj.generation.model.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
-
-import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
-import static org.apache.commons.lang.StringUtils.uncapitalize;
 
 /**
  * No documentation needed, just look at the methods.
