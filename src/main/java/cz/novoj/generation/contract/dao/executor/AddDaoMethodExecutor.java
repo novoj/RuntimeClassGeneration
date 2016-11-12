@@ -1,4 +1,4 @@
-package cz.novoj.generation.contract.dao;
+package cz.novoj.generation.contract.dao.executor;
 
 import cz.novoj.generation.model.traits.PropertyAccessor;
 import cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils;
@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
  *
  * @param <T>
  */
-public class AddDaoMethodExecutor<T extends PropertyAccessor> {
+public class AddDaoMethodExecutor<T extends PropertyAccessor> implements DaoMethodExecutor<T> {
     private final List<BiConsumer<PropertyAccessor, Object[]>> populateFcts = new LinkedList<>();
 
 	/**
@@ -46,7 +46,8 @@ public class AddDaoMethodExecutor<T extends PropertyAccessor> {
 	 * @param args
 	 * @return
 	 */
-	public T apply(T proxyState, Object[] args) {
+	@Override
+	public T apply(T proxyState, Object... args) {
 		populateFcts.forEach(poupulator -> poupulator.accept(proxyState, args));
 		return proxyState;
 	}

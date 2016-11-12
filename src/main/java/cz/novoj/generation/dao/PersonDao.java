@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 
 public abstract class PersonDao implements Dao<CustomizedPerson> {
@@ -30,6 +31,22 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
 
 	@Override
 	public abstract List<CustomizedPerson> getAll();
+
+	public abstract List<CustomizedPerson> getAllSortedByFirstName();
+
+	public abstract CustomizedPerson getByFirstNameAndLastName(String firstName, String lastName);
+
+	public abstract CustomizedPerson getByAgeLessThanAndFirstNameEq(int age, String lastName);
+
+	public abstract List<CustomizedPerson> getByAgeLessThan(int age);
+
+	public abstract Optional<CustomizedPerson> getByFirstNameIsNullAndLastNameIsNotNull();
+
+	public abstract List<CustomizedPerson> getByFirstNameInSortedByAgeDesc(String... firstNames);
+
+	public abstract int removeByAge(int age);
+
+	public abstract List<CustomizedPerson> removeAllByAge(int age);
 
 	public void loadFromCsv(InputStream is) throws IOException {
 		final List<String> colNames = new LinkedList<>();

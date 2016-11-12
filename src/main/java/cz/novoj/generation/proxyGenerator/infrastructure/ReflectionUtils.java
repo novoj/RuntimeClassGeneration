@@ -1,12 +1,25 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
+import java.beans.FeatureDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 public interface ReflectionUtils {
+	Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_ACCESSOR_CACHE = new WeakHashMap<>(128);
+	Object MONITOR = new Object();
 
 	/**
 	 * Retrieves parameter names from the method via. reflection.
@@ -29,23 +42,40 @@ public interface ReflectionUtils {
 	}
 
 	/**
-	 * Returns true if method equals method onClass with the same name and same parameters.
+	 * Retrieves property value from the object by calling getter method on it. It is usually used for retrieving
+	 * "computed" properties.
 	 *
-	 * @param method
-	 * @param onClass
-	 * @param withSameName
-	 * @param withSameTypes
+	 * @param object
+	 * @param propertyName
 	 * @return
 	 */
-    static boolean isMethodDeclaredOn(Method method, Class<?> onClass, String withSameName, Class<?>... withSameTypes) {
-        try {
-            return method.equals(onClass.getMethod(withSameName, withSameTypes));
-        } catch (Exception ex) {
-            throw new IllegalStateException(
-                "Matcher " + onClass.getName() + " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
-            );
-        }
-    }
+	static Object getProperty(Object object, String propertyName) {
+		// collect and cache property descriptors for certain class
+		final Map<String, PropertyDescriptor> beanDescriptors = PROPERTY_ACCESSOR_CACHE.computeIfAbsent(
+				object.getClass(),
+				aClass -> {
+					try {
+						return Stream.of(Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors())
+									 .collect(toMap(FeatureDescriptor::getName, identity()));
+					} catch(IntrospectionException e) {
+						throw new IllegalArgumentException(
+								"Can't introspect class " + object.getClass().getName() + "!", e
+						);
+					}
+				});
+
+		// invoke read method to gather value
+		return ofNullable(beanDescriptors.get(propertyName))
+				.map(pd -> {
+					try {
+						return pd.getReadMethod().invoke(object);
+					} catch (Exception e) {
+						// error in getter?!
+						throw new RuntimeException(e);
+					}
+				})
+				.orElse(null);
+	}
 
 	/**
 	 * Finds method handle for the default method.
@@ -69,4 +99,22 @@ public interface ReflectionUtils {
 
 	}
 
+	/**
+	 * Returns true if method equals method onClass with the same name and same parameters.
+	 *
+	 * @param method
+	 * @param onClass
+	 * @param withSameName
+	 * @param withSameTypes
+	 * @return
+	 */
+	static boolean isMethodDeclaredOn(Method method, Class<?> onClass, String withSameName, Class<?>... withSameTypes) {
+		try {
+			return method.equals(onClass.getMethod(withSameName, withSameTypes));
+		} catch (Exception ex) {
+			throw new IllegalStateException(
+					"Matcher " + onClass.getName() + " failed to process " + method.toGenericString() + ": " + ex.getMessage(), ex
+			);
+		}
+	}
 }
