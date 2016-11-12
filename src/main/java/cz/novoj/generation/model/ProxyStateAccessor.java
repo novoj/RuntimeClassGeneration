@@ -1,6 +1,6 @@
 package cz.novoj.generation.model;
 
-public interface Proxy {
+public interface ProxyStateAccessor {
 
     Object getProxyState();
 

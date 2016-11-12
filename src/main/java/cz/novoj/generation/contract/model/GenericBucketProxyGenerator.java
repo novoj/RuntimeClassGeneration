@@ -1,7 +1,7 @@
 package cz.novoj.generation.contract.model;
 
 import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
-import cz.novoj.generation.model.Proxy;
+import cz.novoj.generation.model.ProxyStateAccessor;
 import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -18,7 +18,7 @@ public interface GenericBucketProxyGenerator {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if (Proxy.class.getDeclaredMethod("getProxyState").equals(method)) {
+			if (ProxyStateAccessor.class.getDeclaredMethod("getProxyState").equals(method)) {
 				return genericBucket;
 			} else if ("getProperties".equals(method.getName())) {
 				return genericBucket.getData();
@@ -35,7 +35,7 @@ public interface GenericBucketProxyGenerator {
 				return genericBucket.toString();
 			} else if (Object.class.getDeclaredMethod("equals", Object.class).equals(method)) {
 				return proxy.getClass().equals(args[0].getClass()) &&
-						genericBucket.equals(((Proxy)args[0]).getProxyState());
+						genericBucket.equals(((ProxyStateAccessor)args[0]).getProxyState());
 			}
 			throw new UnsupportedOperationException("Method " + method.toGenericString() + " is not supported right now!");
 		}

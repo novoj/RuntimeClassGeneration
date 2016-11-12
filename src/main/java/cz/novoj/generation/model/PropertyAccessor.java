@@ -2,7 +2,6 @@ package cz.novoj.generation.model;
 
 import java.util.Map;
 
-
 public interface PropertyAccessor {
 
 	Object getProperty(String name);

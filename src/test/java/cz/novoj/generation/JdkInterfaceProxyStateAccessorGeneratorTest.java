@@ -9,7 +9,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 
-public class JdkInterfaceProxyGeneratorTest {
+public class JdkInterfaceProxyStateAccessorGeneratorTest {
 
 	@Test
 	public void JdkProxyGenerator_Proxy_Created() throws Exception {
@@ -50,7 +50,7 @@ public class JdkInterfaceProxyGeneratorTest {
 	public void JdkProxyGenerator_Proxy_ToStringReturnsContentsOfTheMap() throws Exception {
         final Person person = createTestPersonProxy("Jan", "Novotný");
 
-		assertEquals("{lastName=Novotný, firstName=Jan}", person.toString());
+		assertEquals("{firstName=Jan, lastName=Novotný}", person.toString());
 	}
 
     @Test
