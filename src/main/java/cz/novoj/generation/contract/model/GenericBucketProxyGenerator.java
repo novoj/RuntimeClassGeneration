@@ -5,19 +5,11 @@ import cz.novoj.generation.proxyGenerator.JdkProxyDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.JdkProxyGenerator;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 
-import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.isMethodDeclaredOn;
-import static org.apache.commons.lang.StringUtils.uncapitalize;
-
 
 public interface GenericBucketProxyGenerator {
 
-	String GET = "get";
-	String SET = "set";
-	String GET_PROPERTY = "getProperty";
-	String SET_PROPERTY = "setProperty";
-	String GET_PROPERTIES = "getProperties";
-
-	static MethodClassification<String, GenericBucket, PropertyAccessor> getterInvoker() {
+	/** METHOD CONTRACT: Object getSomething() **/
+	static MethodClassification<PropertyAccessor, String, GenericBucket> getterInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> /* TODO */,
         /* methodContext */ method -> /* TODO */,
@@ -25,7 +17,8 @@ public interface GenericBucketProxyGenerator {
 		);
 	}
 
-	static MethodClassification<String, GenericBucket, PropertyAccessor> setterInvoker() {
+	/** METHOD CONTRACT: void setSomething(Object value) **/
+	static MethodClassification<PropertyAccessor, String, GenericBucket> setterInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> /* TODO */,
         /* methodContext */ method -> /* TODO */,
@@ -34,7 +27,8 @@ public interface GenericBucketProxyGenerator {
 		});
 	}
 
-	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertiesInvoker() {
+	/** METHOD CONTRACT: Map<String,Object> getProperties() **/
+	static MethodClassification<PropertyAccessor, Void, GenericBucket> getPropertiesInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> /* TODO */,
         /* methodContext */ method -> /* TODO */,
@@ -42,7 +36,8 @@ public interface GenericBucketProxyGenerator {
 		);
 	}
 
-	static MethodClassification<Void, GenericBucket, PropertyAccessor> getPropertyInvoker() {
+	/** METHOD CONTRACT: Object getProperty(String propertyName) **/
+	static MethodClassification<PropertyAccessor, Void, GenericBucket> getPropertyInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> /* TODO */,
         /* methodContext */ method -> /* TODO */,
@@ -50,7 +45,8 @@ public interface GenericBucketProxyGenerator {
 		);
 	}
 
-	static MethodClassification<Void, GenericBucket, PropertyAccessor> setPropertyInvoker() {
+	/** METHOD CONTRACT: void setProperty(String propertyName, Object propertyValue) **/
+	static MethodClassification<PropertyAccessor, Void, GenericBucket> setPropertyInvoker() {
 		return new MethodClassification<>(
         /* matcher */       method -> /* TODO */,
         /* methodContext */ method -> /* TODO */,

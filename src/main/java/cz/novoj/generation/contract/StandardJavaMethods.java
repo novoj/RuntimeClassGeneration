@@ -10,7 +10,7 @@ import static cz.novoj.generation.proxyGenerator.infrastructure.ReflectionUtils.
 
 public interface StandardJavaMethods {
 
-    static MethodClassification<Void, Object, ProxyStateAccessor> toStringMethodInvoker() {
+    static MethodClassification<ProxyStateAccessor, Void, Object> toStringMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
         /* methodContext */ NO_CONTEXT,
@@ -18,7 +18,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object, ProxyStateAccessor> hashCodeMethodInvoker() {
+    static MethodClassification<ProxyStateAccessor, Void, Object> hashCodeMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
         /* methodContext */ NO_CONTEXT,
@@ -26,7 +26,7 @@ public interface StandardJavaMethods {
         );
     }
 
-    static MethodClassification<Void, Object, ProxyStateAccessor> equalsMethodInvoker() {
+    static MethodClassification<ProxyStateAccessor, Void, Object> equalsMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
         /* methodContext */ NO_CONTEXT,

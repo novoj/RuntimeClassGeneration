@@ -9,7 +9,7 @@ public interface ProxyStateAccessor {
 
     Object getProxyState();
 
-    static MethodClassification<Void, Object, ProxyStateAccessor> getProxyStateMethodInvoker() {
+    static MethodClassification<ProxyStateAccessor, Void, Object> getProxyStateMethodInvoker() {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, ProxyStateAccessor.class, "getProxyState"),
         /* methodContext */ NO_CONTEXT,

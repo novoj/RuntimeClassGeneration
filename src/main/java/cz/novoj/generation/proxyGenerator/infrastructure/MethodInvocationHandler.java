@@ -3,7 +3,7 @@ package cz.novoj.generation.proxyGenerator.infrastructure;
 import java.lang.reflect.Method;
 
 @FunctionalInterface
-public interface MethodInvocationHandler<T, S, U> {
+public interface MethodInvocationHandler<U, T, S> {
 
 	/**
 	 * This method mimics {@link java.lang.reflect.InvocationHandler} interface but accepts memoized information

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public class MethodClassification<T, S, U> {
+public class MethodClassification<U, T, S> {
 	/** no operation lambda creating void methodContext **/
     public static final Function<Method, Void> NO_CONTEXT = method -> null;
 
@@ -24,7 +24,7 @@ public class MethodClassification<T, S, U> {
 	 *
 	 * this method handler will be called by DispatcherInvocationHandler for each method execution on proxy
 	 */
-    private final MethodInvocationHandler<T, S, U> invocationHandler;
+    private final MethodInvocationHandler<U, T, S> invocationHandler;
 
 	/**
 	 * Delegates matching logic to methodMatcher predicate.
