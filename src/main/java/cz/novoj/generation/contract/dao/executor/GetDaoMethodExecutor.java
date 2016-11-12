@@ -50,7 +50,7 @@ public class GetDaoMethodExecutor<T extends PropertyAccessor> extends AbstractDa
         final DaoMethodQuery queryAST = getQueryAST(method.getName());
 
         // translate query AST filter into predicate chain
-        this.filterPredicate = ofNullable(queryAST.getFilter()).map(queryNode -> getFilterPredicate(method, queryNode));
+        this.filterPredicate = ofNullable(queryAST.getFilter()).map(this::getFilterPredicate);
 		// translate query AST sort into comparator chain
         this.orderComparator = ofNullable(queryAST.getSort()).map(this::getSortComparator);
 		// create result function translating filtered / sorted stream of repository items into the required return type
@@ -59,12 +59,11 @@ public class GetDaoMethodExecutor<T extends PropertyAccessor> extends AbstractDa
 
 	/**
 	 * Method uses visitor pattern to traverse query AST node tree and convert it to the {@link Predicate} chain.
-	 * @param method
 	 * @param queryNode
 	 * @return
 	 */
-	private Predicate<RepositoryItemWithMethodArgs<T>> getFilterPredicate(Method method, QueryNode queryNode) {
-		QueryNodeToPredicateVisitor<T> visitor = new QueryNodeToPredicateVisitor<>(method);
+	private Predicate<RepositoryItemWithMethodArgs<T>> getFilterPredicate(QueryNode queryNode) {
+		QueryNodeToPredicateVisitor<T> visitor = new QueryNodeToPredicateVisitor<>();
 		queryNode.visit(visitor);
 		return visitor.getPredicate();
 	}

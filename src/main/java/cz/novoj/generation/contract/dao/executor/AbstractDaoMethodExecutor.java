@@ -94,7 +94,7 @@ abstract class AbstractDaoMethodExecutor<T extends PropertyAccessor> implements 
                 } else {
                     return optionalResult.map(t -> {
                         if (returnType.isInstance(t)) {
-                            //ok type matches
+                            //ok type createPredicate
                             return t;
                         } else {
                             // ups - we may try to convert types here, if we wanted example to be more complex

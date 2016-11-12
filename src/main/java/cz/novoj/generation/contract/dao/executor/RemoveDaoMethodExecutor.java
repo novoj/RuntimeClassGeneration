@@ -27,12 +27,12 @@ public class RemoveDaoMethodExecutor<T extends PropertyAccessor> extends Abstrac
     public RemoveDaoMethodExecutor(Method method) {
         final DaoMethodQuery daoMethodQuery = getQueryAST(method.getName());
 
-        this.filterPredicate = ofNullable(daoMethodQuery.getFilter()).map(keywordInstance -> getFilterPredicate(method, keywordInstance));
+        this.filterPredicate = ofNullable(daoMethodQuery.getFilter()).map(this::getFilterPredicate);
         this.resultTransformer = getResultTransformer(method);
     }
 
-    private Predicate<RepositoryItemWithMethodArgs<T>> getFilterPredicate(Method method, QueryNode queryNode) {
-        QueryNodeToPredicateVisitor<T> visitor = new QueryNodeToPredicateVisitor<>(method);
+    private Predicate<RepositoryItemWithMethodArgs<T>> getFilterPredicate(QueryNode queryNode) {
+        QueryNodeToPredicateVisitor<T> visitor = new QueryNodeToPredicateVisitor<>();
         queryNode.visit(visitor);
         return visitor.getPredicate();
     }

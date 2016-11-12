@@ -1,12 +1,14 @@
 package cz.novoj.generation.contract.dao.executor.dto;
 
-import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword.Kind;
 import lombok.Data;
 
 import java.util.LinkedList;
 import java.util.List;
 
-
+/**
+ * State object for the parsing state machine.
+ */
 @Data
 public class QueryAccumulator {
     private final QueryNodeAccumulator[] accumulators;
@@ -18,7 +20,7 @@ public class QueryAccumulator {
         this.activeAccumulator = null;
     }
 
-    public void switchAccumulator(Keyword.Kind kind) {
+    public void switchAccumulator(Kind kind) {
         for (QueryNodeAccumulator accumulator : accumulators) {
             if (accumulator.getKind() == kind) {
                 this.activeAccumulator = accumulator;

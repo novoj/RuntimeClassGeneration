@@ -17,7 +17,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-
+/**
+ * State object for the query parsing state maching.
+ */
 @Data
 public class QueryNodeAccumulator {
     private final Keyword defaultKeyword;
@@ -57,7 +59,7 @@ public class QueryNodeAccumulator {
         while (it.hasNext()) {
             final String constant = it.next();
             if (counter > 0) {
-                counter = counter - constant.length();
+				counter -= constant.length();
                 it.remove();
             }
             if (counter <= 0) {

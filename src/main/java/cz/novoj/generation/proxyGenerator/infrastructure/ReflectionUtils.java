@@ -1,8 +1,7 @@
 package cz.novoj.generation.proxyGenerator.infrastructure;
 
-import com.sun.beans.WeakCache;
-
 import java.beans.FeatureDescriptor;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.invoke.MethodHandle;
@@ -11,6 +10,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -18,7 +18,7 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 public interface ReflectionUtils {
-    WeakCache<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_ACCESSOR_CACHE = new WeakCache<>();
+    Map<Class<?>, Map<String, PropertyDescriptor>> PROPERTY_ACCESSOR_CACHE = new WeakHashMap<>(128);
     Object MONITOR = new Object();
 
 	/**
@@ -41,32 +41,40 @@ public interface ReflectionUtils {
         return parameterNames;
     }
 
+	/**
+	 * Retrieves property value from the object by calling getter method on it. It is usually used for retrieving
+	 * "computed" properties.
+	 *
+	 * @param object
+	 * @param propertyName
+	 * @return
+	 */
     static Object getProperty(Object object, String propertyName) {
-        try {
-            Map<String, PropertyDescriptor> beanDescriptors = PROPERTY_ACCESSOR_CACHE.get(object.getClass());
-            if (beanDescriptors == null) {
-                beanDescriptors = Stream.of(Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors())
-                                .collect(toMap(FeatureDescriptor::getName, identity()));
+		// collect and cache property descriptors for certain class
+		final Map<String, PropertyDescriptor> beanDescriptors = PROPERTY_ACCESSOR_CACHE.computeIfAbsent(
+				object.getClass(),
+				aClass -> {
+					try {
+						return Stream.of(Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors())
+									 .collect(toMap(FeatureDescriptor::getName, identity()));
+					} catch(IntrospectionException e) {
+						throw new IllegalArgumentException(
+								"Can't introspect class " + object.getClass().getName() + "!", e
+						);
+					}
+				});
 
-                synchronized (MONITOR) {
-                    PROPERTY_ACCESSOR_CACHE.put(object.getClass(), beanDescriptors);
-                }
-
-            }
-            return ofNullable(beanDescriptors.get(propertyName))
-                    .map(pd -> {
-                        try {
-                            return pd.getReadMethod().invoke(object);
-                        } catch (Exception e) {
-                            // error in getter?!
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .orElse(null);
-
-        } catch (Exception ex) {
-            throw new RuntimeException("Class introspection unexpectedly failed.", ex);
-        }
+		// invoke read method to gather value
+		return ofNullable(beanDescriptors.get(propertyName))
+				.map(pd -> {
+					try {
+						return pd.getReadMethod().invoke(object);
+					} catch (Exception e) {
+						// error in getter?!
+						throw new RuntimeException(e);
+					}
+				})
+				.orElse(null);
     }
 
 	/**

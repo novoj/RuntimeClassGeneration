@@ -4,6 +4,7 @@ import cz.novoj.generation.contract.dao.executor.dto.DaoMethodQuery;
 import cz.novoj.generation.contract.dao.executor.dto.QueryNodeAccumulator;
 import cz.novoj.generation.contract.dao.executor.dto.QueryAccumulator;
 import cz.novoj.generation.contract.dao.query.keyword.Keyword;
+import cz.novoj.generation.contract.dao.query.keyword.Keyword.Kind;
 import cz.novoj.generation.contract.dao.query.keyword.KeywordContainer;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
@@ -11,6 +12,7 @@ import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.sort.SortKeywordContainer;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -19,9 +21,15 @@ import java.util.stream.Collector;
 
 import static java.util.Optional.ofNullable;
 
-
+/**
+ * State maching parsing method name into the query AST.
+ * This is adept for replacement with some ANTLR implementation or some other more powerful implementation.
+ *
+ * I'm not proud of this implementation much :)
+ *
+ */
 public class QueryCollector implements Collector<String, QueryAccumulator, DaoMethodQuery> {
-    private final EnumMap<Keyword.Kind, String> kindPrefixes = new EnumMap<>(Keyword.Kind.class);
+    private final AbstractMap<Kind, String> kindPrefixes = new EnumMap<>(Kind.class);
     private final FilterKeywordContainer defaultFilterContainer;
     private final FilterKeyword defaultFilterKeyword;
     private final SortKeywordContainer defaultSortContainer;
@@ -37,8 +45,8 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         this.defaultFilterKeyword = defaultFilterKeyword;
         this.defaultSortContainer = defaultSortContainer;
         this.defaultSortKeyword = defaultSortKeyword;
-        kindPrefixes.put(Keyword.Kind.Filter, "By");
-        kindPrefixes.put(Keyword.Kind.Sort, "SortedBy");
+        kindPrefixes.put(Kind.Filter, "By");
+        kindPrefixes.put(Kind.Sort, "SortedBy");
     }
 
     @Override
@@ -57,7 +65,7 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
             final List<Keyword> keywordAdepts = activeAcc.map(QueryNodeAccumulator::getKeywordAdepts).orElse(Collections.emptyList());
 
             final Keyword keyword = activeAcc.map(kiAcc -> findKeyword(s, accumulatedWords, kiAcc.getKind())).orElse(null);
-            final Keyword.Kind kindPrefix = findKindPrefix(s, accumulatedWords);
+            final Kind kindPrefix = findKindPrefix(s, accumulatedWords);
 
             if (kindPrefix != null) {
                 activeAcc.ifPresent(kia -> {
@@ -139,14 +147,14 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         acc.clearKeywordAdepts();
     }
 
-    private Keyword.Kind findKindPrefix(String currentWord, List<String> words) {
-        final StringBuilder sb = new StringBuilder();
+    private Kind findKindPrefix(String currentWord, List<String> words) {
+        final StringBuilder sb = new StringBuilder(128);
         words.forEach(sb::append);
         sb.append(currentWord);
         final String composedWord = sb.toString();
-        Keyword.Kind result = null;
+        Kind result = null;
         String resultPrefix = null;
-        for (Map.Entry<Keyword.Kind, String> entry : kindPrefixes.entrySet()) {
+        for (Entry<Kind, String> entry : kindPrefixes.entrySet()) {
             if (composedWord.endsWith(entry.getValue())) {
                 if (result == null || resultPrefix.length() < entry.getValue().length()) {
                     result = entry.getKey();
@@ -157,14 +165,14 @@ public class QueryCollector implements Collector<String, QueryAccumulator, DaoMe
         return result;
     }
 
-    private Keyword findKeyword(String currentWord, List<String> words, Keyword.Kind kind) {
+    private Keyword findKeyword(String currentWord, List<String> words, Kind kind) {
         final List<String> constant = new ArrayList<>(words);
         constant.add(currentWord);
         return Keyword.findKeyword(kind, constant);
     }
 
     private static String getComposedName(List<Keyword> keywords) {
-        final StringBuilder composedName = new StringBuilder();
+        final StringBuilder composedName = new StringBuilder(128);
         for (Keyword keyword : keywords) {
             ofNullable(keyword).ifPresent(k -> composedName.append(k.name()));
         }

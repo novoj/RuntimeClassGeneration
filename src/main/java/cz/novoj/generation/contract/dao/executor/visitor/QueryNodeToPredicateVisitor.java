@@ -5,14 +5,11 @@ import cz.novoj.generation.contract.dao.query.instance.ContainerQueryNode;
 import cz.novoj.generation.contract.dao.query.instance.LeafQueryNode;
 import cz.novoj.generation.contract.dao.query.instance.QueryNode;
 import cz.novoj.generation.contract.dao.query.instance.QueryNodeVisitor;
-import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeyword;
 import cz.novoj.generation.contract.dao.query.keyword.filter.FilterKeywordContainer;
 import cz.novoj.generation.model.traits.PropertyAccessor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -24,15 +21,12 @@ import java.util.function.Predicate;
  * @param <U>
  */
 public class QueryNodeToPredicateVisitor<U extends PropertyAccessor> implements QueryNodeVisitor {
-    // method used only for nice error messages
-	private final Method method;
 	// stack is used for composing predicate chain
 	private final Stack<Consumer<Predicate<RepositoryItemWithMethodArgs<U>>>> predicateConsumer = new Stack<>();
 	// final predicate created by this visitor
 	@Getter private Predicate<RepositoryItemWithMethodArgs<U>> predicate;
 
-    public QueryNodeToPredicateVisitor(Method method) {
-        this.method = method;
+    public QueryNodeToPredicateVisitor() {
         // initially what's passed to the consumer is set to the root predicate (ie. result)
         predicateConsumer.push(p -> this.predicate = p);
     }
@@ -45,44 +39,8 @@ public class QueryNodeToPredicateVisitor<U extends PropertyAccessor> implements 
 	@Override
     public void accept(LeafQueryNode queryNode) {
         predicateConsumer.peek()
-						 .accept(riwma -> getPredicate(queryNode, riwma.getRepositoryItem(), riwma.getArgs()));
+						 .accept(PredicateFactory.createPredicate(queryNode));
     }
-
-	/**
-	 * Creates predicate for passed query node, repository item and method invocation arguments.
-	 * @param queryNode
-	 * @param repositoryItem
-	 * @param args
-	 * @return
-	 */
-	private boolean getPredicate(LeafQueryNode queryNode, U repositoryItem, Object[] args) {
-		final FilterKeyword keyword = (FilterKeyword)queryNode.getKeyword();
-		final String propertyName = queryNode.getConstant();
-		final Object argument = Optional.ofNullable(queryNode.getIndex())
-										.map(argIndex -> getArgumentFromIndex(propertyName, argIndex, args))
-										.orElse(null);
-
-		return PropertyAccessor.matches(keyword, repositoryItem, propertyName, argument);
-	}
-
-	/**
-	 * Retrieves argument from method invocation arguments on specific position.
-	 * @param propertyName
-	 * @param argIndex
-	 * @param args
-	 * @return
-	 */
-	private Object getArgumentFromIndex(String propertyName, Integer argIndex, Object[] args) {
-
-		if (argIndex >= args.length) {
-			throw new IllegalArgumentException(
-					"No argument in method " + method.toGenericString() +
-							" for " + propertyName + " filtering constraint!"
-			);
-		}
-
-		return args[argIndex];
-	}
 
 	/**
 	 * Visits {@link ContainerQueryNode} and propagates visit to all container children.
@@ -126,7 +84,7 @@ public class QueryNodeToPredicateVisitor<U extends PropertyAccessor> implements 
 
         @Override
         public void accept(Predicate<RepositoryItemWithMethodArgs<U>> t) {
-            finalPredicate = PropertyAccessor.matches(keyword, finalPredicate, t);
+            finalPredicate = PredicateFactory.createPredicate(keyword, finalPredicate, t);
         }
     }
 }

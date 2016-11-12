@@ -39,15 +39,12 @@ public class QueryNodeToComparatorVisitor<U extends PropertyAccessor> implements
 	 */
     @Override
     public void accept(LeafQueryNode queryNode) {
-        comparatorConsumer.peek().accept(
-				(o1, o2) -> {
-					// create comparator that will compare o1 and o2
-					// according to keyword and property value under specified name
-					final SortKeyword keyword = (SortKeyword)queryNode.getKeyword();
-					final String propertyName = queryNode.getConstant();
-					return PropertyAccessor.compare(keyword, o1, o2, propertyName);
-				}
-		);
+		// create comparator that will compare o1 and o2
+		// according to keyword and property value under specified name
+		final SortKeyword keyword = (SortKeyword)queryNode.getKeyword();
+		final String propertyName = queryNode.getConstant();
+		comparatorConsumer.peek()
+						  .accept(ComparatorFactory.compare(keyword, propertyName));
     }
 
 	/**
@@ -93,7 +90,7 @@ public class QueryNodeToComparatorVisitor<U extends PropertyAccessor> implements
 
         @Override
         public void accept(Comparator<U> t) {
-            finalComparator = PropertyAccessor.compare(keyword, finalComparator, t);
+            finalComparator = ComparatorFactory.compare(keyword, finalComparator, t);
         }
     }
 }
