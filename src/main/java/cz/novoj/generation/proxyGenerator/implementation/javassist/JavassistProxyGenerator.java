@@ -70,6 +70,8 @@ public class JavassistProxyGenerator {
 					 */
 
                     fct.setFilter(method -> !Objects.equals(method.getName(), "finalize"));
+                    // DON'T USE CACHE - WE CACHE CLASSES OURSELVES
+                    fct.setUseCache(false);
 
                     Class<?> proxyClass = fct.createClass();
                     log.info("Created proxy class: " + proxyClass.getName());

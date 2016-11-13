@@ -59,6 +59,8 @@ public class CglibProxyGenerator {
 					fct.setCallbackFilter(method -> "finalize".equals(method.getName()) && method.getParameterCount() == 0 ? 0 : 1);
 					// SET CALLBACK TO THE NEWLY CREATED INSTANCE
 					fct.setCallbackTypes(new Class[]{NoOp.class, CglibDispatcherInvocationHandler.class});
+					// DON'T USE CACHE - WE CACHE CLASSES OURSELVES
+					fct.setUseCache(false);
 
 					Class<?> proxyClass = fct.createClass();
 					log.info("Created proxy class: " + proxyClass.getName());
