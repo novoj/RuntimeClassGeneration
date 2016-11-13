@@ -14,8 +14,4 @@ public class GenericBucketRepository<T extends PropertyAccessor> {
         data.add(item);
     }
 
-    public void resetDataTo(List<T> newData) {
-        this.data = newData;
-    }
-
 }
