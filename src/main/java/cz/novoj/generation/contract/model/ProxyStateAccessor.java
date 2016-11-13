@@ -18,7 +18,7 @@ public interface ProxyStateAccessor {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, ProxyStateAccessor.class, "getProxyState"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> proxyState
         );
     }
 

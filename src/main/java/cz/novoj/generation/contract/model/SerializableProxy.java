@@ -37,7 +37,7 @@ public interface SerializableProxy extends Serializable {
         return new MethodClassification<>(
 		/* matcher */       method -> isMethodDeclaredOn(method, SerializableProxy.class, "writeReplace"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) ->
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) ->
 									new SerializableProxyDescriptor<T>(
 										deserializationProxyFactory,
 										proxyState,

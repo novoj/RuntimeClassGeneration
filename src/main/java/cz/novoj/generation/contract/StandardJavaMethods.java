@@ -20,7 +20,7 @@ public interface StandardJavaMethods {
         return new MethodClassification<>(
         /* matcher */       Method::isDefault,
         /* methodContext */ ReflectionUtils::findMethodHandle,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) ->
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) ->
 								methodContext.bindTo(proxy).invokeWithArguments(args)
         );
     }
@@ -30,7 +30,7 @@ public interface StandardJavaMethods {
         return new MethodClassification<>(
         /* matcher */       method -> !Modifier.isAbstract(method.getModifiers()),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> method.invoke(proxy, args)
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> methodCall.invokeSuper()
         );
     }
 
@@ -39,7 +39,7 @@ public interface StandardJavaMethods {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "toString"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.toString()
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> proxyState.toString()
         );
     }
 
@@ -48,7 +48,7 @@ public interface StandardJavaMethods {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "hashCode"),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.hashCode()
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> proxyState.hashCode()
         );
     }
 
@@ -57,7 +57,7 @@ public interface StandardJavaMethods {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, Object.class, "equals", Object.class),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) ->
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) ->
                                         proxy.getClass().equals(args[0].getClass()) &&
                                         proxyState.equals(((ProxyStateAccessor)args[0]).getProxyState())
         );
@@ -66,9 +66,9 @@ public interface StandardJavaMethods {
 	/** METHOD CONTRACT: catch everything else and throw exception **/
 	@SuppressWarnings("rawtypes")
 	static CurriedMethodContextInvocationHandler missingImplementationInvoker() {
-        return (proxy, method, args, proxyState) -> {
+        return (methodCall, proxy, args, proxyState) -> {
             throw new UnsupportedOperationException(
-                    "Method " + method.toGenericString() + " is not supported by this proxy!"
+                    "Method " + methodCall.toString() + " is not supported by this proxy!"
             );
         };
     }

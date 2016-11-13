@@ -31,7 +31,7 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET) && method.getParameterCount() == 0,
         /* methodContext */ method -> uncapitalize(method.getName().substring(GET.length())),
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.get(methodContext)
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> proxyState.get(methodContext)
         );
     }
 
@@ -40,7 +40,7 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(SET) && method.getParameterCount() == 1,
         /* methodContext */ method -> uncapitalize(method.getName().substring(SET.length())),
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> {
         	proxyState.set(methodContext, args[0]);
 			return null;
 		});
@@ -51,7 +51,7 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTIES),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> proxyState.getData()
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> proxyState.getData()
         );
     }
 
@@ -60,7 +60,7 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, GET_PROPERTY, String.class),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> {
         	proxyState.get(String.valueOf(args[0]));
         	return null;
 		});
@@ -71,7 +71,7 @@ public interface GenericBucketProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> isMethodDeclaredOn(method, PropertyAccessor.class, SET_PROPERTY, String.class, Object.class),
         /* methodContext */ method -> null,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> {
         	proxyState.set(String.valueOf(args[0]), args[1]);
 		    return null;
 		});

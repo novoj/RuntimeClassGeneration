@@ -33,7 +33,8 @@ public class JavassistDispatcherInvocationHandler<T> extends AbstractDispatcherI
                 );
 
 		// INVOKE CURRIED LAMBDA, PASS REFERENCE TO REAL METHOD IF AVAILABLE
-        return invocationHandler.invoke(self, proceed == null ? thisMethod : proceed, args, proxyState);
+		final JavassistMethodCall methodCall = new JavassistMethodCall(self, thisMethod, args, proceed);
+        return invocationHandler.invoke(methodCall, self, args, proxyState);
     }
 
 }

@@ -28,7 +28,7 @@ public interface GenericBucketDaoProxyGenerator {
         /* matcher */       method -> ADD.equals(method.getName()) &&
 				(method.getParameterCount() == 1 && itemClass.isAssignableFrom(method.getParameterTypes()[0])),
         /* methodContext */ NO_CONTEXT,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> {
 			proxyState.add((T) args[0]);
 			return null;
 		});
@@ -40,7 +40,7 @@ public interface GenericBucketDaoProxyGenerator {
         /* matcher */       method -> ADD.equals(method.getName()) && (method.getParameterCount() > 1 ||
                 (method.getParameterCount() == 1 && !itemClass.isAssignableFrom(method.getParameterTypes()[0]))),
         /* methodContext */ AddDaoMethodExecutor::new,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> {
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> {
             T item = methodContext.apply(proxy.createNew(), args);
             proxyState.add(item);
             return null;
@@ -52,7 +52,7 @@ public interface GenericBucketDaoProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(GET),
         /* methodContext */ GetDaoMethodExecutor::new,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
 	/** METHOD CONTRACT: SpecificResult removeByFilter(Object paramA, Object paramB) **/
@@ -60,7 +60,7 @@ public interface GenericBucketDaoProxyGenerator {
         return new MethodClassification<>(
         /* matcher */       method -> method.getName().startsWith(REMOVE),
         /* methodContext */ RemoveDaoMethodExecutor::new,
-        /* invocation */    (proxy, method, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
+        /* invocation */    (methodCall, proxy, args, methodContext, proxyState) -> methodContext.apply(proxyState, args));
     }
 
     static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJdkProxy(Class<T> daoClass, Class<S> itemClass) {

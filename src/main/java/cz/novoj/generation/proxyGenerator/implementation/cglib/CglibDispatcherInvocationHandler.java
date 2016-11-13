@@ -2,6 +2,7 @@ package cz.novoj.generation.proxyGenerator.implementation.cglib;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.AbstractDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.CurriedMethodContextInvocationHandler;
+import cz.novoj.generation.proxyGenerator.infrastructure.MethodCall;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import lombok.extern.apachecommons.CommonsLog;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -32,7 +33,8 @@ public class CglibDispatcherInvocationHandler<T> extends AbstractDispatcherInvoc
 				this::getCurriedMethodContextInvocationHandler
 		);
 		// INVOKE CURRIED LAMBDA
-		return invocationHandler.invoke(proxy, method, args, proxyState);
+		final MethodCall methodCall = new CglibMethodCall(obj, method, args, proxy);
+		return invocationHandler.invoke(methodCall, obj, args, proxyState);
     }
 
 }

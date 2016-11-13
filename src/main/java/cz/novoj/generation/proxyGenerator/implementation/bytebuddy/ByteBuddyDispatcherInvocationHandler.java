@@ -2,6 +2,7 @@ package cz.novoj.generation.proxyGenerator.implementation.bytebuddy;
 
 import cz.novoj.generation.proxyGenerator.infrastructure.AbstractDispatcherInvocationHandler;
 import cz.novoj.generation.proxyGenerator.infrastructure.CurriedMethodContextInvocationHandler;
+import cz.novoj.generation.proxyGenerator.infrastructure.MethodCall;
 import cz.novoj.generation.proxyGenerator.infrastructure.MethodClassification;
 import lombok.extern.apachecommons.CommonsLog;
 
@@ -12,10 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @CommonsLog
 public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherInvocationHandler<T> implements InvocationHandler {
-    /* this cache might be somewhere else, but for the sake of the example ... */
+	/* this cache might be somewhere else, but for the sake of the example ... */
     private static final Map<Method, CurriedMethodContextInvocationHandler<?,?>> CLASSIFICATION_CACHE = new ConcurrentHashMap<>(32);
 
-    public ByteBuddyDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
+	public ByteBuddyDispatcherInvocationHandler(T proxyState, MethodClassification<?, ?,?>... methodClassifications) {
         super(proxyState, methodClassifications);
     }
 
@@ -30,7 +31,8 @@ public class ByteBuddyDispatcherInvocationHandler<T> extends AbstractDispatcherI
 				this::getCurriedMethodContextInvocationHandler
 		);
 		// INVOKE CURRIED LAMBDA
-		return invocationHandler.invoke(proxy, method, args, proxyState);
+		final MethodCall methodCall = new ByteBuddyMethodCall(proxy, method, args);
+		return invocationHandler.invoke(methodCall, proxy, args, proxyState);
 	}
 
 }

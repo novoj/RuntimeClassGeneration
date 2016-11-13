@@ -31,7 +31,11 @@ public class JavassistProxyGenerator {
                 Arrays.asList(interfaces),
 				// LAMBDA THAT CREATES OUR PROXY CLASS
                 classes -> {
-                    ProxyFactory fct = new ProxyFactory();
+                    final ProxyFactory fct = new ProxyFactory();
+
+                    // WE'LL CACHE CLASSES ON OUR OWN
+                    fct.setUseCache(false);
+
                     // IF WE PROXY ABSTRACT CLASS, WE HAVE A RULE THAT IT HAS TO BE FIRST IN LIST
                     if (interfaces[0].isInterface()) {
                     	// FIRST IS INTERFACE
