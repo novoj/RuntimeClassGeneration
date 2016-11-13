@@ -1,6 +1,6 @@
 package cz.novoj.generation;
 
-import cz.novoj.generation.contract.model.GenericBucketProxyGenerator;
+import cz.novoj.generation.contract.GenericBucketProxyGenerator;
 import cz.novoj.generation.model.Person;
 import org.junit.Test;
 
