@@ -39,7 +39,7 @@ public interface GenericBucketDaoProxyGenerator {
         /* invocation */    (proxy, method, args, methodContext, proxyState) -> /* TODO */;
 	}
 
-    static <T extends Dao<S>, S extends PropertyAccessor> T instantiateJavassistProxy(Class<T> daoClass, Class<S> itemClass) {
+    static <T extends Dao<S>, S extends PropertyAccessor> T instantiate(Class<T> daoClass, Class<S> itemClass) {
         return JavassistProxyGenerator.instantiate(
 				// create invocation handler delegating calls to "classifications" - ie atomic features of the proxy
                 new JavassistDispatcherInvocationHandler<>(

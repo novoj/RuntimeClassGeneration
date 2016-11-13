@@ -18,7 +18,7 @@ public class JavassistPersonDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        personDao = GenericBucketDaoProxyGenerator.instantiateJavassistProxy(PersonDao.class, CustomizedPerson.class);
+        personDao = GenericBucketDaoProxyGenerator.instantiate(PersonDao.class, CustomizedPerson.class);
 
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (InputStream is = classLoader.getResourceAsStream("META-INF/data/persons.csv")) {
