@@ -36,7 +36,7 @@ public abstract class PersonDao implements Dao<CustomizedPerson> {
 
 	public abstract CustomizedPerson getByFirstNameAndLastName(String firstName, String lastName);
 
-	public abstract CustomizedPerson getByAgeLessThanAndFirstNameEq(int age, String lastName);
+	public abstract CustomizedPerson getByAgeLessThanAndFirstNameEq(int age, String firstName);
 
 	public abstract List<CustomizedPerson> getByAgeLessThan(int age);
 
