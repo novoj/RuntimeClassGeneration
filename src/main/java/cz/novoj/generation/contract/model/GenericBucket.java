@@ -1,10 +1,13 @@
 package cz.novoj.generation.contract.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("InstanceMethodNamingConvention")
+@EqualsAndHashCode
 public class GenericBucket {
 	@Getter private final Map<String, Object> data = new LinkedHashMap<>(16);
 
@@ -14,20 +17,6 @@ public class GenericBucket {
 
 	public void set(String propertyName, Object propertyValue) {
 		data.put(propertyName, propertyValue);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if(this == o) return true;
-		if(o == null || getClass() != o.getClass()) return false;
-
-		GenericBucket that = (GenericBucket)o;
-		return data.equals(that.data);
-	}
-
-	@Override
-	public int hashCode() {
-		return data.hashCode();
 	}
 
 	@Override
