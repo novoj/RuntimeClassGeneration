@@ -45,8 +45,9 @@ public class MethodClassification<U, T, S> {
 	 * @return lambda with method context baked in, so that only proxy, method and args are necessary to invoke logic
 	 */
 	public CurriedMethodContextInvocationHandler<S, U> createMethodContext(Method classificationMethod) {
-		return (executionMethod, proxy, args, proxyState) -> invocationHandler.invoke(
-				executionMethod, proxy, args, methodContextFactory.apply(classificationMethod), proxyState
+		final T methodContext = methodContextFactory.apply(classificationMethod);
+		return (proxy, executionMethod, args, proxyState) -> invocationHandler.invoke(
+				proxy, executionMethod, args, methodContext, proxyState
 		);
 	}
 
