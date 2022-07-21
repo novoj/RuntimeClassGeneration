@@ -1,3 +1,5 @@
+This repository is closed. The ideas and partly the source code was migrated to real implementation that you can found at [Proxycian repository](https://github.com/FgForrest/Proxycian) and also published to Maven Central for general usage.
+
 # Java Dynamic Proxy generation in runtime
 
 This project is a demo / sandbox project for my presentation at 
